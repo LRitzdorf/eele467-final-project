@@ -7,8 +7,8 @@
   - Track current position, with option to zero
   - Pass through current (debounced) button state
 - IMU
-  - Interfaced with HPS directly via I2C, so no custom VHDL for this
-  - Will need to configure/enable I2C interface in device tree and write device driver for IMU
+  - Use built-in accelerometer on DE10-Nano
+  - Need to check how this interfaces with the SoC
 
 
 ## Software
