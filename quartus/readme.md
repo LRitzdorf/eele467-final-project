@@ -1,1 +1,0 @@
-Quartus project folder
