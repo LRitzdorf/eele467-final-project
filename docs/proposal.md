@@ -3,12 +3,17 @@
 
 ## Hardware
 
-- Encoder interface
-  - Track current position, with option to zero
-  - Pass through current (debounced) button state
-- IMU
-  - Use built-in accelerometer on DE10-Nano
-  - Need to check how this interfaces with the SoC
+- Required
+  - 12.5 MHz PLL
+  - ADC controller
+  - Color LED controller (3x PWM)
+- Additional
+  - Encoder interface
+    - Track current position, with option to zero
+    - Pass through current (debounced) button state
+  - Accelerometer
+    - Use built-in IMU on DE10-Nano
+    - Need to check how this interfaces with the SoC
 
 
 ## Software
