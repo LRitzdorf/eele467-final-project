@@ -21,17 +21,17 @@
 - Modes:
   - Potentiometer control
     - As described in project requirements
-  - IMU control
-    - Read from IMU, perform double integration to find position along all axes
+  - Accelerometer control
+    - Read acceleration from IMU, perform double integration to find position along all axes
     - Use position to control LED channels
-    - Scale position-to-LED-channel conversion using encoder
-  - Transition between modes based on encoder button
+    - Scale "Δx to ΔLED" conversion using encoder
+  - Transition between modes on encoder button press
 
 
 ## Extra Credit
 
+- Start with acceleration-based LED control, implement double integration as extra credit?
 - Add relative encoder interface mode
   - Extra control register to switch between modes
   - Accumulate number of steps and net direction since last read
   - Accumulate number of button presses
-- Start with acceleration-based LED control, implement double integration as extra credit?
