@@ -1,0 +1,124 @@
+
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+bin/
+exec/
+*.exe
+*.out
+*.app
+*.i?86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# Quartus project files
+*.bak
+*.cmp
+*_inst.vhd
+*.done
+*.eqn
+*.hex
+*.html
+*.jdi
+*.pin
+*.pof
+*.ptf.*
+*.qar
+*.qarlog
+*.qws
+*.rpt
+*.smsg
+*.sof
+*.sopc_builder
+*.hdb
+*.rcfdb
+*.kpt
+*.cdb
+*.hsd
+*.logdb
+*.opi
+*.dfp
+*.dpi
+*.db_info
+*.ammdb
+*.sig
+*.hb_info
+*.summary
+*.sopcinfo
+*.srf
+c5_pin_model_dump.txt
+hps_sdram_p0_summary.csv
+synthesis/
+submodules/
+soc_system/
+hps_isw_handoff/
+db/
+.qsys_edit/
+incremental_db/
+output_files/
+work/
+
+# ModelSim/Questa files
+[_@]*
+*.mpf
+*.mti
+*.dat
+*.dbs
+*.psm
+*.bsf
+wlf*
+*.wlf
+*.vstf
+*.ucdb
+cov*/
+simulation/
+transcript*
+sc_dpiheader.h
+vsim.dbg
+
+# draw.io XML files
+*.drawio
+
