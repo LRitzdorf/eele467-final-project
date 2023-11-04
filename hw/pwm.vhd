@@ -25,7 +25,43 @@ end entity;
 
 
 -- PWM controller functionality
--- TODO
 architecture PWM_Arch of PWM is
+
+    -- Number of system clocks per millisecond (synthesis-time derived constant)
+    constant CLKS_PER_MS : uint := SYS_CLKs_sec / 1000;
+    -- Derived control values
+    signal per_limit, duty_limit : uint;
+    -- Counter
+    signal count : uint;
+
 begin
+
+    -- Derive control values
+    per_limit <= "*"(period, CLKS_PER_MS)(38 downto 7);
+    duty_limit <= "*"(per_limit, duty_cycle)(43 downto 12);
+
+    -- Use a basic counter to track progress through the PWM cycle
+    PWM_counter : process (clk, reset) is
+    begin
+
+        if reset then
+            count <= (others => '0');
+            pwm_out <= '0';
+        elsif rising_edge(clk) then
+            -- Update the PWM output state
+            if count < duty_limit - 1 then
+                pwm_out <= '1';
+            else
+                pwm_out <= '0';
+            end if;
+            -- Count up or reset, as appropriate
+            if count >= per_limit - 1 then
+                count <= (others => '0');
+            else
+                count <= count + 1;
+            end if;
+        end if;
+
+    end process;
+
 end architecture;
