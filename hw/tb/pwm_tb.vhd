@@ -1,0 +1,84 @@
+-- Lucas Ritzdorf
+-- 11/04/2023
+-- EELE 467, HW 5
+
+use std.env.all;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.std_logic_unsigned.all;
+
+
+-- PWM test bench
+entity PWM_TB is
+end entity;
+
+architecture PWM_TB_Arch of PWM_TB is
+    constant CLK_PER : time := 100 ns;
+
+    signal clk, reset : std_logic;
+    signal period     : unsigned(16 downto 0);
+    signal duty_cycle : unsigned(13 downto 0);
+    signal output     : std_logic;
+begin
+
+    -- PWM DUT instance
+    dut : entity work.PWM
+        generic map (
+            SYS_CLKs_sec => 100000
+        )
+        port map (
+            clk        => clk,        -- system clock
+            reset      => reset,      -- system reset, active high
+            period     => period,     -- PWM period in milliseconds, UQ10.7
+            duty_cycle => duty_cycle, -- PWM duty cycle, UQ2.12, range [0 1] (out-of-range values saturate)
+            pwm_out    => output      -- PWM output signal
+        );
+
+    -- Clock driver
+    clock : process is
+    begin
+        clk <= '1';
+        while true loop
+            wait for CLK_PER / 2;
+            clk <= not clk;
+        end loop;
+    end process;
+
+    -- Test driver
+    tester : process is
+    begin
+        wait until falling_edge(clk);
+
+        -- Initialization: reset system
+        reset <= '1';
+        period <= to_unsigned(1, 10) & b"0000000";
+        duty_cycle <= b"01000000000000";
+        for i in 1 to 5 loop
+            wait until falling_edge(clk);
+        end loop;
+        wait until falling_edge(clk);
+        reset <= '0';
+
+        -- Basic test: 10% duty cycle
+        duty_cycle <= b"00000110011010";
+        for i in 1 to 100 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Basic test: 50% duty cycle
+        duty_cycle <= b"00100000000000";
+        for i in 1 to 100 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Basic test: 90% duty cycle
+        duty_cycle <= b"00111001100111";
+        for i in 1 to 100 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        finish;
+    end process;
+
+end architecture;
