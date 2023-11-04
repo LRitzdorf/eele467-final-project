@@ -44,14 +44,8 @@ begin
 
         if reset then
             count <= (others => '0');
-            pwm_out <= '0';
         elsif rising_edge(clk) then
-            -- Update the PWM output state
-            if count < duty_limit - 1 then
-                pwm_out <= '1';
-            else
-                pwm_out <= '0';
-            end if;
+
             -- Count up or reset, as appropriate
             if count >= per_limit - 1 then
                 count <= (others => '0');
@@ -61,5 +55,8 @@ begin
         end if;
 
     end process;
+
+    -- PWM output is a simple combinational comparison
+    pwm_out <= '1' when (reset = '0') and (count < duty_limit) else '0';
 
 end architecture;
