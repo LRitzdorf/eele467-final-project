@@ -31,11 +31,23 @@ architecture PWM_Arch of PWM is
     -- Derived control values
     signal per_limit, duty_limit : uint;
     -- Counter
-    signal count : uint;
+    signal count, next_count : uint;
 begin
 
+    -- Count up or reset, as appropriate
+    count_gen : process (all) is
+    begin
+        if reset then
+            next_count <= (others => '0');
+        elsif count >= per_limit - 1 then
+            next_count <= (others => '0');
+        else
+            next_count <= count + 1;
+        end if;
+    end process;
+
     -- Use a basic counter to track progress through the PWM cycle
-    PWM_counter : process (clk, reset) is
+    pwm_gen : process (clk, reset) is
         -- Internal intermediate variable for control value updates
         variable clks_per_period : uint;
     begin
@@ -49,17 +61,13 @@ begin
             duty_limit <= "*"(clks_per_period, duty_cycle)(43 downto 12);
         elsif rising_edge(clk) then
 
-            -- Count up or reset, as appropriate
-            if count >= per_limit - 1 then
-                count <= (others => '0');
-            else
-                count <= count + 1;
-            end if;
             -- Update control values
             if count = 0 then
                 per_limit <= clks_per_period;
                 duty_limit <= "*"(clks_per_period, duty_cycle)(43 downto 12);
             end if;
+            -- Update counter
+            count <= next_count;
 
         end if;
     end process;
