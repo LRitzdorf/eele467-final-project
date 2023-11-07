@@ -81,6 +81,49 @@ begin
             wait until falling_edge(clk);
         end loop;
 
+        -- Fancy test: duty cycle is zero
+        duty_cycle <= b"00000000000000";
+        for i in 1 to 100 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Fancy test: duty cycle just barely nonzero
+        duty_cycle <= b"00000000101001";
+        for i in 1 to 100 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        duty_cycle <= b"00100000000000";  -- Back to 50%
+        -- Basic test: longer period
+        period <= b"00000000100000000";
+        for i in 1 to 200 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Basic test: shorter period
+        period <= b"00000000001000000";
+        for i in 1 to 50 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Fancy test: period is zero
+        period <= b"00000000000000000";
+        for i in 1 to 10 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Fancy test: period just barely nonzero
+        period <= b"00000000000000010";
+        for i in 1 to 10 loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Fancy test: period slightly more nonzero
+        period <= b"00000000000000011";
+        for i in 1 to 10 loop
+            wait until falling_edge(clk);
+        end loop;
+
         finish;
     end process;
 
