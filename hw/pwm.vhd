@@ -39,7 +39,7 @@ begin
     begin
         if reset then
             next_count <= (others => '0');
-        elsif count >= per_limit - 1 then
+        elsif (count >= per_limit - 1) or (per_limit = 0) then
             next_count <= (others => '0');
         else
             next_count <= count + 1;
@@ -62,7 +62,7 @@ begin
         elsif rising_edge(clk) then
 
             -- Update control values
-            if count = 0 then
+            if next_count = 0 then
                 per_limit <= clks_per_period;
                 duty_limit <= "*"(clks_per_period, duty_cycle)(43 downto 12);
             end if;
