@@ -14,7 +14,7 @@ entity PWM_TB is
 end entity;
 
 architecture PWM_TB_Arch of PWM_TB is
-    constant CLK_PER : time := 100 ns;
+    constant CLK_PER : time := 10 us;
 
     signal clk, reset : std_logic;
     signal period     : unsigned(16 downto 0);
@@ -52,13 +52,16 @@ begin
 
         -- Initialization: reset system
         reset <= '1';
-        period <= to_unsigned(1, 10) & b"0000000";
-        duty_cycle <= b"01000000000000";
+        period <= b"00000000010000000"; -- 1
+        duty_cycle <= b"01000000000000"; -- 1
         for i in 1 to 5 loop
             wait until falling_edge(clk);
         end loop;
-        wait until falling_edge(clk);
         reset <= '0';
+        -- Basic test: full duty cycle
+        for i in 1 to 99 loop
+            wait until falling_edge(clk);
+        end loop;
 
         -- Basic test: 10% duty cycle
         duty_cycle <= b"00000110011010";
