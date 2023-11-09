@@ -325,18 +325,12 @@ architecture DE10Nano_arch of DE10Nano_System is
     signal system_rst  : std_logic;                    --! Global reset pin
     signal Push_Button : std_logic_vector(1 downto 0); --! a better description of KEY input, which should really be labelled as KEY_n
 
-    signal reset : std_logic;
-
-    signal next_led_pattern : std_logic;
-
 begin
 
     ---------------------------------------------------------------------------------------------
     -- Signal renaming to make code more readable
     ---------------------------------------------------------------------------------------------
-    Push_Button    <= not KEY; -- Rename signal to push button, which is a better description of KEY input (which really should be labelled as KEY_n since it is active low).
-    reset          <= Push_Button(1);
-    hps_cold_reset <= reset;
+    Push_Button <= not KEY; -- Rename signal to push button, which is a better description of KEY input (which really should be labelled as KEY_n since it is active low).
 
     -------------------------------------------------------
     -- Control Audio Mini LEDs using switches
@@ -356,6 +350,7 @@ begin
     -------------------------------------------------------
     -- HPS
     -------------------------------------------------------
+    hps_cold_reset  <= '0';
     hps_debug_reset <= '0';
     hps_warm_reset  <= '0';
 
