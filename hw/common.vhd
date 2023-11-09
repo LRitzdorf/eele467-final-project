@@ -12,7 +12,6 @@ use ieee.numeric_std.all;
 -- Convenience library with common utilities
 package common is
 
-    subtype uint is unsigned(31 downto 0);
     function clog2 (x : positive) return natural;
 
 end package;
