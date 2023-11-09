@@ -101,7 +101,7 @@ begin
                 then
                     -- Next NUM_CHANNELS registers: duty cycle array
                     Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1)
-                        <= unsigned(avs_s1_writedata(Duty_Cycles'base'length-1 downto 0));
+                        <= unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0));
             elsif unsigned(avs_s1_address) > NUM_CHANNELS then
                 -- Unused registers: ignored
                 null;
