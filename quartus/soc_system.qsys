@@ -9,7 +9,15 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
-   element HPS_LED_Patterns_0.s1
+   element HPS_Multi_PWM_0
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element HPS_Multi_PWM_0.s1
    {
       datum baseAddress
       {
@@ -183,7 +191,13 @@
    type="clock"
    dir="start" />
  <interface name="memory" internal="hps.memory" type="conduit" dir="end" />
+ <interface name="pwms" internal="HPS_Multi_PWM_0.pwms" type="conduit" dir="end" />
  <interface name="reset" internal="clk_hps.clk_in_reset" type="reset" dir="end" />
+ <module name="HPS_Multi_PWM_0" kind="HPS_Multi_PWM" version="1.0" enabled="1">
+  <parameter name="ADDR_WIDTH" value="2" />
+  <parameter name="NUM_CHANNELS" value="3" />
+  <parameter name="SYS_CLKs_sec" value="50000000" />
+ </module>
  <module
    name="SystemID"
    kind="altera_avalon_sysid_qsys"
@@ -805,6 +819,15 @@
   <parameter name="baseAddress" value="0x0010" />
   <parameter name="defaultConnection" value="false" />
  </connection>
+ <connection
+   kind="avalon"
+   version="21.1"
+   start="hps.h2f_lw_axi_master"
+   end="HPS_Multi_PWM_0.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0000" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <connection kind="clock" version="21.1" start="clk_hps.clk" end="SystemID.clk" />
  <connection kind="clock" version="21.1" start="clk_hps.clk" end="jtag_uart.clk" />
  <connection
@@ -812,6 +835,11 @@
    version="21.1"
    start="clk_hps.clk"
    end="onchip_memory.clk1" />
+ <connection
+   kind="clock"
+   version="21.1"
+   start="clk_hps.clk"
+   end="HPS_Multi_PWM_0.clock" />
  <connection
    kind="clock"
    version="21.1"
@@ -844,6 +872,11 @@
    version="21.1"
    start="clk_hps.clk_reset"
    end="jtag_uart.reset" />
+ <connection
+   kind="reset"
+   version="21.1"
+   start="clk_hps.clk_reset"
+   end="HPS_Multi_PWM_0.reset" />
  <connection
    kind="reset"
    version="21.1"
