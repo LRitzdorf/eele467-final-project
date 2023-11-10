@@ -497,5 +497,6 @@ begin
     ADC_CONVST        <= '0';
     ADC_SCK           <= '0';
     ADC_SDI           <= '0';
+    LED               <= (others => '0');
 
 end architecture;
