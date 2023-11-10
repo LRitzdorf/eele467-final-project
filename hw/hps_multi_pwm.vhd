@@ -93,15 +93,25 @@ begin
         elsif rising_edge(clk) and avs_s1_write = '1' then
             if unsigned(avs_s1_address) = to_unsigned(0, avs_s1_address'length) then
                 -- Register zero: period
-                Period <= unsigned(avs_s1_writedata(Period'length-1 downto 0));
+                if resize(unsigned(avs_s1_writedata(Period'length-1 downto 0)), avs_s1_writedata'length)
+                        /= unsigned(avs_s1_writedata) then
+                    Period <= (others => '1');
+                else
+                    Period <= unsigned(avs_s1_writedata(Period'length-1 downto 0));
+                end if;
             elsif (
                     to_unsigned(1, avs_s1_address'length) <= unsigned(avs_s1_address)
                 ) and (
                     unsigned(avs_s1_address) <= to_unsigned(NUM_CHANNELS, avs_s1_address'length)
                 ) then
                     -- Next NUM_CHANNELS registers: duty cycle array
-                    Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1)
-                        <= unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0));
+                    if resize(unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0)), avs_s1_writedata'length)
+                            /= unsigned(avs_s1_writedata) then
+                        Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1) <= (others => '1');
+                    else
+                        Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1)
+                            <= unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0));
+                    end if;
             elsif unsigned(avs_s1_address) > NUM_CHANNELS then
                 -- Unused registers: ignored
                 null;
