@@ -1,0 +1,23 @@
+#include "socfpga_cyclone5_de0_nano_soc.dtsi"
+
+/ {
+
+    // ADC Controller for DE-Series Boards
+    adc_controller: adc_controller@ff200000 {
+        compatible = "lr,adc_controller_de";
+        reg = <0xff200000 0x20>;
+    };
+
+    // HPS_Multi_PWM custom component
+    multi_pwm: hps_multi_pwm@ff200020 {
+        compatible = "lr,hps_multi_pwm";
+        reg = <0xff200020 0x10>;
+    };
+
+    // Altera SystemID IP
+    sysid: sysid@ff200030 {
+        compatible = "altr,sysid-1.0";
+        reg = <0xff200030 0x08>;
+    };
+
+};
