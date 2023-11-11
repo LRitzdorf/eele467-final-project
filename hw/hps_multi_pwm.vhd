@@ -105,9 +105,9 @@ begin
                     unsigned(avs_s1_address) <= to_unsigned(NUM_CHANNELS, avs_s1_address'length)
                 ) then
                     -- Next NUM_CHANNELS registers: duty cycle array
-                    if resize(unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0)), avs_s1_writedata'length)
-                            /= unsigned(avs_s1_writedata) then
-                        Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1) <= (others => '1');
+                    if unsigned(avs_s1_writedata)
+                            > resize(unsigned'(b"01_0000_0000_0000"), avs_s1_writedata'length) then
+                        Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1) <= b"01_0000_0000_0000";
                     else
                         Duty_Cycles(to_integer(unsigned(avs_s1_address)) - 1)
                             <= unsigned(avs_s1_writedata(Duty_Cycles(0)'length-1 downto 0));
