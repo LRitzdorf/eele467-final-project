@@ -325,12 +325,15 @@ architecture DE10Nano_arch of DE10Nano_System is
     signal system_rst  : std_logic;                    --! Global reset pin
     signal Push_Button : std_logic_vector(1 downto 0); --! a better description of KEY input, which should really be labelled as KEY_n
 
+    signal LED_GPIOs : std_logic_vector(0 to 2);
+
 begin
 
     ---------------------------------------------------------------------------------------------
     -- Signal renaming to make code more readable
     ---------------------------------------------------------------------------------------------
     Push_Button <= not KEY; -- Rename signal to push button, which is a better description of KEY input (which really should be labelled as KEY_n since it is active low).
+    Audio_Mini_GPIO_1(2 downto 0) <= LED_GPIOs(2) & LED_GPIOs(1) & LED_GPIOs(0);
 
     -------------------------------------------------------
     -- Control Audio Mini LEDs using switches
@@ -463,7 +466,7 @@ begin
             memory_oct_rzqin   => HPS_DDR3_RZQ,
 
             -- PWM outputs, in ascending order
-            pwms_out_channels => Audio_Mini_GPIO_1(2 downto 0)
+            pwms_out_channels => LED_GPIOs
         );
 
 
