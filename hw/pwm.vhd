@@ -11,7 +11,7 @@ use ieee.numeric_std.all;
 -- PWM controller interface
 entity PWM is
     generic (
-        SYS_CLKs_sec : integer range 0 to 2**30 -- Number of system clocks periods in one second
+        SYS_CLKs_sec : positive -- Number of system clocks periods in one second
     );
     port (
         clk        : in  std_logic;             -- system clock
@@ -26,11 +26,12 @@ end entity;
 -- PWM controller functionality
 architecture PWM_Arch of PWM is
     -- Number of system clocks per millisecond (synthesis-time derived constant)
-    constant CLKS_PER_MS : uint := to_unsigned(SYS_CLKs_sec / 1000, 32);
+    constant CLKS_PER_MS : natural := SYS_CLKs_sec / 1000;
     -- Derived control values
-    signal per_limit, duty_limit : uint;
+    signal per_limit  : unsigned(period'high-7+clog2(CLKS_PER_MS) downto 0);
+    signal duty_limit : unsigned(per_limit'high+duty_cycle'high-12 downto 0);
     -- Counter
-    signal count, next_count : uint;
+    signal count, next_count : unsigned(per_limit'high downto 0);
 begin
 
     -- Count up or reset, as appropriate
@@ -48,22 +49,22 @@ begin
     -- Use a basic counter to track progress through the PWM cycle
     pwm_gen : process (clk, reset) is
         -- Internal intermediate variable for control value updates
-        variable clks_per_period : uint;
+        variable clks_per_period : unsigned(period'high-7+clog2(CLKS_PER_MS) downto 0);
     begin
-        clks_per_period := "*"(period, CLKS_PER_MS)(38 downto 7);
+        clks_per_period := "*"(period, CLKS_PER_MS)(period'high+clog2(CLKS_PER_MS) downto 7+0);
 
         if reset then
             -- Reset counter
             count <= (others => '0');
             -- Update control values
             per_limit <= clks_per_period;
-            duty_limit <= "*"(clks_per_period, duty_cycle)(43 downto 12);
+            duty_limit <= "*"(clks_per_period, duty_cycle)(clks_per_period'high+duty_cycle'high downto 0+12);
         elsif rising_edge(clk) then
 
             -- Update control values
             if next_count = 0 then
                 per_limit <= clks_per_period;
-                duty_limit <= "*"(clks_per_period, duty_cycle)(43 downto 12);
+                duty_limit <= "*"(clks_per_period, duty_cycle)(clks_per_period'high+duty_cycle'high downto 0+12);
             end if;
             -- Update counter
             count <= next_count;

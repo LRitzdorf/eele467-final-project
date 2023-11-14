@@ -123,6 +123,18 @@ begin
             wait until falling_edge(clk);
         end loop;
 
+        -- Basic test: long period
+        period <= b"00100000000000000";
+        for i in 1 to 100 * (2**7) loop
+            wait until falling_edge(clk);
+        end loop;
+
+        -- Fancy test: maximum period
+        period <= b"11111111111111111";
+        for i in 1 to 100 * ((2**10)-1) loop
+            wait until falling_edge(clk);
+        end loop;
+
         finish;
     end process;
 
