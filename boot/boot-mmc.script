@@ -1,0 +1,23 @@
+# file names
+setenv fpga-image soc_system.rbf
+setenv dtb-image soc_system.dtb
+setenv kernel-image zImage
+setenv rootfs-dev /dev/mmcblk0p2
+
+# kernel bootargs
+setenv bootargs console=ttyS0,115200 root=${rootfs-dev} rw rootwait earlyprintk=serial ip=${ipaddr}
+
+
+# --- END OF CUSTOMIZABLE SECTION --- DON'T TOUCH PAST THIS POINT ---
+
+# get bitstream, configure the fpga
+fatload ${devtype} ${devnum}:${distro_bootpart} ${loadaddr} ${fpga-image}
+fpga load 0 ${fileaddr} ${filesize}
+
+# get dtb and kernel
+fatload ${devtype} ${devnum}:${distro_bootpart} ${fdt_addr_r} ${dtb-image}
+fatload ${devtype} ${devnum}:${distro_bootpart} ${kernel_addr_r} ${kernel-image}
+# enable fpga bridges
+bridge enable
+# boot the kernel
+bootz ${kernel_addr_r} - ${fdt_addr_r}
