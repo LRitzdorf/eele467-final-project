@@ -125,12 +125,30 @@ If unsure, [BalenaEtcher](https://etcher.balena.io) is an excellent option.
 
 ## First Boot Setup
 
+Eject the SD card and insert it into the DE10-Nano.
+Connect to the board's UART serial console and power it up — you should be greeted by the U-Boot shell prompt.
+
+Before we can boot properly, a few environment variables must be set.
+These are listed in [`env_vars.txt`](env_vars.txt), in almost exactly the required format.
+To set each variable, simply prepend the `setenv` command to each line from the file.
+When done, use the `saveenv` command to make your changes persist across reboots.
+
+To test the resulting configuration, enter the `reset` command.
+The board should reset, load U-Boot again, and proceed to boot into Linux!
+
+> [!NOTE]
+> The U-Boot configuration provided here has a fallback system in place.
+> If you attempt to boot the board while not connected to your computer's TFTP and NFS servers, it will instead use the root filesystem packaged onto the SD card.
+> This root filesystem was derived from our NFS network share (see the `make_sdimage_p3.py` invocation in the [Image Creation section](#image-creation)), but could actually be any suitable root filesystem.
+
 
 ## Summary
 
-- Rocketboards' setup tutorial
-  - Note which names need to be changed
-- Initial env var setup (ethaddr, save)
-- Boot methods
-  - MMC boot
-  - Netboot with MMC fallback
+To summarize, then, the process of building a custom boot image consists of the following steps:
+- Construct the target platform using Quartus Prime and the QSYS/Platform Designer tool
+- Obtain U-Boot sources and configure build options for the DE10-Nano board
+- Extract configuration values from the QSYS system design
+- Compile U-Boot
+- Obtain or create a device tree, kernel, and root filesystem
+- Construct a bootable system image from the above elements
+- Boot the system and configure it for proper automatic startup
