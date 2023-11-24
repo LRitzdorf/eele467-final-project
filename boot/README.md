@@ -9,8 +9,12 @@ In particular, reconfiguring hard processor system (HPS) I/O pins requires that 
 The preloader is the second stage of the HPS boot sequence — it is executed by the first-stage boot code (which is stored in on-chip ROM), and is thus the earliest element of the boot sequence over which we have control.
 Among other tasks, the preloader is responsible for configuring HPS I/O pin multiplexing, which controls connection points for certain peripherals, such as I2C and SPI modules.
 
+In addition, we find that building a bootable SD card image from scratch facilitates a deeper understanding of the boot sequence, as well as massively improved flexibility and control of the resulting system.
+While not strictly necessary for this course, the ability to tear down and rebuild our software stack from the ground up is extremely valuable in more advanced contexts.
+
 This document explains and demonstrates the process of building the U-Boot bootloader and its associated preloader (known as the Secondary Program Loader, or SPL) for the DE10-Nano FPGA board with Cyclone V SoC.
 It is based in large part on [RocketBoards' documentation](https://www.rocketboards.org/foswiki/Documentation/BuildingBootloaderCycloneVAndArria10) for the same process, but targets the DE10-Nano in particular, and provides more concrete examples.
+If any steps are unclear, please do refer to that link, but note that certain names may not match this document (in which cases, the names here should be preferred).
 
 
 ## Preparation
@@ -88,7 +92,7 @@ Copy the following files into the `sdcard` directory:
 - The `u-boot-with-spl.sfp` image (located at the top level of the U-Boot repo, after compilation)
 - The boot script `boot-mmc.script` from this directory
 Also, create a directory named `sdfs` within `sdcard`, and copy the following files into it:
-- The compiled device tree blob (`.dtb` file) for your system, as mentioned in <#Preparation>
+- The compiled device tree blob (`.dtb` file) for your system, as mentioned in the [Preparation section](#preparation)
 - The kernel image you wish to use (probably named `zImage`)
 - The raw binary file (`.rbf`) for your FPGA system (generated using the **File > Convert Programming Files** menu option in Quartus)
 
@@ -152,3 +156,29 @@ To summarize, then, the process of building a custom boot image consists of the 
 - Obtain or create a device tree, kernel, and root filesystem
 - Construct a bootable system image from the above elements
 - Boot the system and configure it for proper automatic startup
+
+
+## Further Tips
+
+> [!TIP]
+> The SD card image generated in the [SD Card Imaging section](#sd-card-imaging) isn't particularly special.
+> If its contents need to be edited, it is possible to mount the appropriate partition and add/remove/replace files as desired, rather than regenerating and flashing the entire image.
+
+> [!NOTE]
+> Note that viewing the flashed SD card in Windows will show only partition 2, which is FAT32 formatted.
+> Windows cannot read partition 1 (raw/unformatted) or partition 3 (ext4 formatted).
+
+> [!TIP]
+> In the [First Boot Setup section](#first-boot-setup), we configured U-Boot to boot from an existing TFTP server if available, or from the SD card as a fallback.
+> However, it can also be configured to boot only from SD card.
+> This will skip the `ping` command used to check if a computer is connected, meaning a faster startup.
+>
+> To accomplish this, simply change the `bootcmd` variable in the U-Boot shell:
+> ```sh
+> > setenv bootcmd 'run distro_bootcmd'
+> > saveenv
+> ```
+
+> [!TIP]
+> In the [Image Creation section](#image-creation), we packaged the contents of our NFS network share into the SD card image, using them as an embedded root filesystem.
+> Actually, there is nothing special about this "rootfs" — we could have substituted any other suitable system image, such as a different version of [Ubuntu Base](https://wiki.ubuntu.com/Base) (releases available [here](https://cdimage.ubuntu.com/ubuntu-base/releases)), or even [Arch Linux ARM](https://archlinuxarm.org).
