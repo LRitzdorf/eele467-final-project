@@ -25,6 +25,52 @@ In order to build U-Boot, we also need to obtain the U-Boot source code.
 Do this by cloning the Altera U-Boot repository: `$ git clone https://github.com/altera-opensource/u-boot-socfpga.git`.
 
 
+## Compiling U-Boot
+
+### Configuring U-Boot
+
+Before actually compiling U-Boot, we must configure it for our DE10-Nano board.
+
+First, set the cross-compiler with `$ export CROSS_COMPILE=arm-linux-gnueabihf-`.
+Then, apply the default DE10-Nano configuration by running `$ make socfpga_de10_nano_defconfig`.
+Further changes, as desired, can be made via `$ make menuconfig`, though none are necessary for our purposes.
+
+### Applying Platform Settings
+
+While the Altera U-Boot repository ships default HPS configurations, we wish to apply our own — in fact, this is the most common reason for us to compile U-Boot in the first place.
+
+Ensure you have moved into the `u-boot-socfpga` directory, then extract settings from the target QSYS platform by running:
+```sh
+$ python arch/arm/mach-socfpga/cv_bsp_generator/cv_bsp_generator.py \
+  -i <path to Quartus project>/hps_isw_handoff/soc_system_hps \
+  -o board/terasic/de10-nano/qts
+```
+This will generate a set of header files (with names matching `*_config.h`) in the specified `qts` directory.
+These contain our extracted platform settings, and will be integrated into U-Boot during the compile step.
+
+> [!IMPORTANT]
+> At the time of writing, the `cv_bsp_generator.py` script is slightly broken, and writes header files that contain incorrectly named macros.
+> These will break compilation if not fixed.
+> A [pull request](https://github.com/altera-opensource/u-boot-socfpga/pull/14) has been raised to fix this.
+
+If the above pull request has been merged (or "closed as completed") when you read this, the script should work as-is; if not, further action is required.
+We'll need to retrieve fixed scripts from the pull request, by running the following commands:
+```sh
+$ git fetch origin pull/14/head:fix-config-prefix
+$ git restore --source fix-config-prefix -- arch/arm/mach-socfpga/cv_bsp_generator/
+```
+This will apply fixes to the relevant scripts, and the above Python command can be re-run to generate correctly named header macros.
+
+### Compilation
+
+With the required setup steps complete, we can now compile U-Boot for the DE10-Nano.
+Before proceeding, ensure that the `CROSS_COMPILE` environment variable is still set.
+Running `$ printenv CROSS_COMPILE` should display the compiler prefix set earlier; if it does not, re-run the earlier `export` command to set it again.
+
+Move to the top level of the U-Boot repository (if not already there), and compile U-Boot with `$ make -j$(nproc)`.
+This will take a few moments to complete, and may use a significant portion of your system's processing power.
+
+
 ## Summary
 
 - Rocketboards' setup tutorial
