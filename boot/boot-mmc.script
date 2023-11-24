@@ -5,7 +5,7 @@ setenv kernel-image zImage
 setenv rootfs-dev /dev/mmcblk0p2
 
 # kernel bootargs
-setenv bootargs console=ttyS0,115200 root=${rootfs-dev} rw rootwait earlyprintk=serial ip=${ipaddr}
+setenv bootargs console=ttyS0,115200 root=${rootfs-dev} rw rootwait earlyprintk=serial
 
 
 # --- END OF CUSTOMIZABLE SECTION --- DON'T TOUCH PAST THIS POINT ---
