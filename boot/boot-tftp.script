@@ -1,0 +1,28 @@
+# file directories
+setenv tftp-kernel-dir de10nano/kernel
+setenv tftp-hw-dir de10nano/hardware
+setenv nfs-rootfs-dir /srv/nfs/de10nano/ubuntu-rootfs
+setenv rootfs-dev /dev/nfs
+
+# file names
+setenv fpga-image soc_system.rbf
+setenv dtb-image soc_system.dtb
+setenv kernel-image zImage
+
+# kernel bootargs
+setenv bootargs console=ttyS0,115200 root=${rootfs-dev} rw ip=${ipaddr} nfsroot=${serverip}:${nfs-rootfs-dir},vers=4,tcp nfsrootdebug earlyprintk=serial
+
+
+# --- END OF CUSTOMIZABLE SECTION --- DON'T TOUCH PAST THIS POINT ---
+
+# get bitstream, configure the fpga
+tftp ${loadaddr} ${tftp-hw-dir}/${fpga-image}
+fpga load 0 ${fileaddr} ${filesize}
+
+# get dtb and kernel
+tftp ${fdt_addr_r} ${tftp-hw-dir}/${dtb-image}
+tftp ${kernel_addr_r} ${tftp-kernel-dir}/${kernel-image}
+# enable fpga bridges
+bridge enable
+# boot the kernel
+bootz ${kernel_addr_r} - ${fdt_addr_r}

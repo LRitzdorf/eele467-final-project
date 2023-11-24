@@ -1,0 +1,6 @@
+ethaddr de:ad:be:ef:01:23
+ipaddr 192.168.100.11
+serverip 192.168.100.10
+netmask 255.255.255.0
+bootcmd_tftp 'tftp $loadaddr de10nano/bootscripts/u-boot.scr; source $fileaddr'
+bootcmd 'if ping ${serverip}; then run bootcmd_tftp; else run distro_bootcmd; fi'
