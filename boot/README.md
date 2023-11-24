@@ -15,6 +15,11 @@ It is based in large part on [RocketBoards' documentation](https://www.rocketboa
 
 ## Preparation
 
+> [!NOTE]
+> The steps in this document were developed and tested in a Linux environment.
+> As such, they should be followed in one as well.
+> This could be a bare-metal Linux installation, or a virtual machine.
+
 Before building U-Boot, it is critical that the target QSYS (Platform Designer) system be generated.
 Further, the system must be configured with the desired I/O pin settings, as these will be compiled into the preloader during the following process.
 
@@ -69,6 +74,56 @@ Running `$ printenv CROSS_COMPILE` should display the compiler prefix set earlie
 
 Move to the top level of the U-Boot repository (if not already there), and compile U-Boot with `$ make -j$(nproc)`.
 This will take a few moments to complete, and may use a significant portion of your system's processing power.
+
+
+## SD Card Imaging
+
+### Image Creation
+
+The generated U-Boot binary must be appropriately packaged into an SD card image for booting by the DE10-Nano's Cyclone V HPS.
+
+Create an `sdcard` working directory for SD card setup in a convenient location (such as next to the `u-boot-socfpga` repository).
+Copy the following files into the `sdcard` directory:
+- RocketBoards' `make_sdimage_p3.py` script (included in this directory, or available [here](https://releases.rocketboards.org/2021.04/gsrd/tools/make_sdimage_p3.py))
+- The `u-boot-with-spl.sfp` image (located at the top level of the U-Boot repo, after compilation)
+- The boot script `boot-mmc.script` from this directory
+Also, create a directory named `sdfs` within `sdcard`, and copy the following files into it:
+- The compiled device tree blob (`.dtb` file) for your system, as mentioned in <#Preparation>
+- The kernel image you wish to use (probably named `zImage`)
+- The raw binary file (`.rbf`) for your FPGA system (generated using the **File > Convert Programming Files** menu option in Quartus)
+
+Compile the MMC bootscript into a form readable by U-Boot:
+```sh
+$ mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d boot-mmc.script sdfs/boot.scr
+```
+
+And finally, generate the SD card image:
+```sh
+$ sudo python3 make_sdimage_p3.py -f \
+    -P u-boot-with-spl.sfp,num=3,format=raw,size=1M,type=A2 \
+    -P sdfs,num=1,format=fat32,size=100M \
+    -P /srv/nfs/de10nano/ubuntu-rootfs/,num=2,format=ext3,size=4G \
+    -s 5G -n sdcard.img
+```
+The resulting image will be saved as `sdcard.img`, and will be 5GB in size.
+
+> [!TIP]
+> In addition to the U-Boot binary and `sdfs` directory, we specified the path to our NFS network share.
+> This means we've baked the network share's root filesystem into our SD card image as well, and can use it to boot without a network connection!
+> This is covered in more detail below.
+
+### Image Flashing
+
+Flash `sdcard.img` to a microSD card for the DE10-Nano.
+On Linux, this can be accomplished using the `dd` utility:
+```sh
+# dd if=sdcard.img of=/dev/<microSD card device> status=progress
+```
+On Windows, use your disk flashing utility of choice.
+If unsure, [BalenaEtcher](https://etcher.balena.io) is an excellent option.
+
+
+## First Boot Setup
 
 
 ## Summary
