@@ -38,6 +38,16 @@ struct hps_multi_pwm_dev {
     void __iomem *base_addr;
     struct mutex lock;
 };
+/**
+ * struct dev_reg_kind_attribute - Struct to store attributes for registers of
+ *                                 a similar kind.
+ * @attr: Normal device attribute struct
+ * @reg_offset: Offset to the specific register being represented
+ */
+struct dev_reg_kind_attribute {
+    struct device_attribute attr;
+    unsigned int reg_offset;
+};
 
 
 //-----------------------------------------------------------------------
@@ -113,8 +123,10 @@ static ssize_t duty_cycle_show(struct device *dev,
     struct device_attribute *attr, char *buf)
 {
     struct hps_multi_pwm_dev *priv = dev_get_drvdata(dev);
+    struct dev_reg_kind_attribute *duty_cycle_reg_attr
+        = container_of(attr, struct dev_reg_kind_attribute, attr);
 
-    u32 duty_cycle = ioread32(priv->base_addr + REG_LED_REG_OFFSET);
+    u32 duty_cycle = ioread32(priv->base_addr + duty_cycle_reg_attr->reg_offset);
 
     return scnprintf(buf, PAGE_SIZE, "0x%X\n", duty_cycle);
 }
@@ -136,6 +148,8 @@ static ssize_t duty_cycle_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
     struct hps_multi_pwm_dev *priv = dev_get_drvdata(dev);
+    struct dev_reg_kind_attribute *duty_cycle_reg_attr
+        = container_of(attr, struct dev_reg_kind_attribute, attr);
 
     // Parse the string we received as a u32
     // See https://elixir.bootlin.com/linux/latest/source/lib/kstrtox.c#L289
@@ -146,7 +160,7 @@ static ssize_t duty_cycle_store(struct device *dev,
         return ret;
     }
 
-    iowrite32(duty_cycle, priv->base_addr + REG_LED_REG_OFFSET);
+    iowrite32(duty_cycle, priv->base_addr + duty_cycle_reg_attr->reg_offset);
 
     // Write was succesful, so we return the number of bytes we wrote.
     return size;
@@ -156,19 +170,22 @@ static ssize_t duty_cycle_store(struct device *dev,
 //-----------------------------------------------------------------------
 // sysfs Attributes
 //-----------------------------------------------------------------------
+#define DEVICE_ATTR_RW_KIND(_name, _kind, _reg_offset) \
+struct dev_reg_kind_attribute dev_attr_##_name = \
+    { __ATTR(_name, 0644, _kind##_show, _kind##_store), _reg_offset }
 // Define sysfs attributes
 static DEVICE_ATTR_RW(period);
-static DEVICE_ATTR_RW(duty_cycle_1);
-static DEVICE_ATTR_RW(duty_cycle_2);
-static DEVICE_ATTR_RW(duty_cycle_3);
+static DEVICE_ATTR_RW_KIND(duty_cycle_1, duty_cycle, REG_DC1_OFFSET);
+static DEVICE_ATTR_RW_KIND(duty_cycle_2, duty_cycle, REG_DC2_OFFSET);
+static DEVICE_ATTR_RW_KIND(duty_cycle_3, duty_cycle, REG_DC3_OFFSET);
 
 // Create an attribute group so the device core can export the attributes for
 // us.
 static struct attribute *hps_multi_pwm_attrs[] = {
     &dev_attr_period.attr,
-    &dev_attr_duty_cycle_1.attr,
-    &dev_attr_duty_cycle_2.attr,
-    &dev_attr_duty_cycle_3.attr,
+    &dev_attr_duty_cycle_1.attr.attr,
+    &dev_attr_duty_cycle_2.attr.attr,
+    &dev_attr_duty_cycle_3.attr.attr,
     NULL,
 };
 ATTRIBUTE_GROUPS(hps_multi_pwm);
