@@ -17,6 +17,9 @@ MAKECMD = $(MAKE) -C $(KDIR) M=$$PWD
 default:
 	$(MAKECMD)
 
+modules_install:
+	$(MAKECMD) modules_install
+
 clean:
 	$(MAKECMD) clean
 endif
