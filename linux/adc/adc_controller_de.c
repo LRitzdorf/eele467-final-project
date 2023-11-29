@@ -49,26 +49,17 @@ struct dev_reg_kind_attribute {
     unsigned int reg_offset;
 };
 /**
- * tracked_state_t - Describes states tracked by this driver, in the form
- *                   {true, false, unknown}. Useful primarily for write-only
- *                   registers, whose value is initially unknown, but can be
- *                   tracked by the driver after their first write.
- */
-typedef enum {
-    TRACKSTATE_TRUE    = 1,
-    TRACKSTATE_FALSE   = 0,
-    TRACKSTATE_UNKNOWN = -1
-} tracked_state_t;
-/**
  * struct dev_reg_tracked_attribute - Struct to store attributes for registers
  *                                    tracked by this driver.
  * @attr: Normal device attribute struct
- * @state: Currently tracked state of the register. Should probably be
- *         initialized to the unknown state.
+ * @known: Whether the current register state is known. Should probably be
+ *         initialized to false.
+ * @state: Currently tracked state of the register. Invalid if known is false.
  */
 struct dev_reg_tracked_attribute {
     struct device_attribute attr;
-    tracked_state_t state;
+    bool known;
+    u32 state;
 };
 
 
@@ -139,7 +130,8 @@ static ssize_t auto_update_store(struct device *dev,
     }
 
     iowrite32(auto_update, priv->base_addr + REG_W_AUTO_UPDATE_OFFSET);
-    auto_update_reg_attr->state = auto_update ? TRACKSTATE_TRUE : TRACKSTATE_FALSE;
+    auto_update_reg_attr->known = true;
+    auto_update_reg_attr->state = auto_update;
 
     // Write was succesful, so we return the number of bytes we wrote.
     return size;
@@ -164,12 +156,10 @@ static ssize_t auto_update_show(struct device *dev,
     struct dev_reg_tracked_attribute *auto_update_reg_attr
         = container_of(attr, struct dev_reg_tracked_attribute, attr);
 
-    tracked_state_t auto_update = auto_update_reg_attr->state;
-
-    if (auto_update == TRACKSTATE_UNKNOWN) {
-        return scnprintf(buf, PAGE_SIZE, "Unknown; write boolean value to set\n");
+    if (auto_update_reg_attr->known) {
+        return scnprintf(buf, PAGE_SIZE, "%d\n", auto_update_reg_attr->state);
     }
-    return scnprintf(buf, PAGE_SIZE, "%d\n", auto_update);
+    return scnprintf(buf, PAGE_SIZE, "State unknown; write a value to begin tracking\n");
 }
 
 
@@ -204,12 +194,12 @@ static ssize_t channel_show(struct device *dev,
 #define DEVICE_ATTR_RO_KIND(_name, _kind, _reg_offset) \
 struct dev_reg_kind_attribute dev_attr_##_name = \
     { __ATTR(_name, 0444, _kind##_show, NULL), _reg_offset }
-#define DEVICE_ATTR_TRACKED(_mode, _name, _init_state) \
+#define DEVICE_ATTR_TRACKED(_mode, _name, _init_state, _init_value) \
 struct dev_reg_tracked_attribute dev_attr_##_name = \
-    { __ATTR_##_mode(_name), _init_state }
+    { __ATTR_##_mode(_name), _init_state, _init_value }
 // Define sysfs attributes
 static DEVICE_ATTR_WO(update);
-static DEVICE_ATTR_TRACKED(RW, auto_update, TRACKSTATE_UNKNOWN);
+static DEVICE_ATTR_TRACKED(RW, auto_update, false, 0);
 static DEVICE_ATTR_RO_KIND(channel_0, channel, REG_R_CH0_OFFSET);
 static DEVICE_ATTR_RO_KIND(channel_1, channel, REG_R_CH1_OFFSET);
 static DEVICE_ATTR_RO_KIND(channel_2, channel, REG_R_CH2_OFFSET);
