@@ -48,6 +48,28 @@ struct dev_reg_kind_attribute {
     struct device_attribute attr;
     unsigned int reg_offset;
 };
+/**
+ * tracked_state_t - Describes states tracked by this driver, in the form
+ *                   {true, false, unknown}. Useful primarily for write-only
+ *                   registers, whose value is initially unknown, but can be
+ *                   tracked by the driver after their first write.
+ */
+typedef enum {
+    TRACKSTATE_TRUE    = 1,
+    TRACKSTATE_FALSE   = 0,
+    TRACKSTATE_UNKNOWN = -1
+} tracked_state_t;
+/**
+ * struct dev_reg_tracked_attribute - Struct to store attributes for registers
+ *                                    tracked by this driver.
+ * @attr: Normal device attribute struct
+ * @state: Currently tracked state of the register. Should probably be
+ *         initialized to the unknown state.
+ */
+struct dev_reg_tracked_attribute {
+    struct device_attribute attr;
+    tracked_state_t state;
+};
 
 
 //-----------------------------------------------------------------------
@@ -90,6 +112,8 @@ static ssize_t auto_update_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
     struct adc_controller_dev *priv = dev_get_drvdata(dev);
+    struct dev_reg_tracked_attribute *auto_update_reg_attr
+        = container_of(attr, struct dev_reg_tracked_attribute, attr);
 
     // Parse the string we received as a bool
     // See https://elixir.bootlin.com/linux/latest/source/lib/kstrtox.c#L289
@@ -101,9 +125,37 @@ static ssize_t auto_update_store(struct device *dev,
     }
 
     iowrite32(auto_update, priv->base_addr + REG_W_AUTO_UPDATE_OFFSET);
+    auto_update_reg_attr->state = auto_update ? TRACKSTATE_TRUE : TRACKSTATE_FALSE;
 
     // Write was succesful, so we return the number of bytes we wrote.
     return size;
+}
+
+//-----------------------------------------------------------------------
+// REG1 Read: Auto-Update register read function show()
+//-----------------------------------------------------------------------
+/**
+ * auto_update_show() - Return the tracked auto-update value to user-space via
+ *                      sysfs.
+ * @dev: Unused.
+ * @attr: Device attribute structure for the relevant register.
+ * @buf: Buffer that gets returned to user-space.
+ *
+ * Return: The number of bytes read.
+ */
+static ssize_t auto_update_show(struct device *dev,
+    struct device_attribute *attr, char *buf)
+{
+    // Get the private adc_controller data out of the dev struct
+    struct dev_reg_tracked_attribute *auto_update_reg_attr
+        = container_of(attr, struct dev_reg_tracked_attribute, attr);
+
+    tracked_state_t auto_update = auto_update_reg_attr->state;
+
+    if (auto_update == TRACKSTATE_UNKNOWN) {
+        return scnprintf(buf, PAGE_SIZE, "Unknown; write boolean value to set\n");
+    }
+    return scnprintf(buf, PAGE_SIZE, "%d\n", auto_update);
 }
 
 
@@ -138,9 +190,12 @@ static ssize_t channel_show(struct device *dev,
 #define DEVICE_ATTR_RO_KIND(_name, _kind, _reg_offset) \
 struct dev_reg_kind_attribute dev_attr_##_name = \
     { __ATTR(_name, 0444, _kind##_show, NULL), _reg_offset }
+#define DEVICE_ATTR_TRACKED(_mode, _name, _init_state) \
+struct dev_reg_tracked_attribute dev_attr_##_name = \
+    { __ATTR_##_mode(_name), _init_state }
 // Define sysfs attributes
 static DEVICE_ATTR_WO(update);
-static DEVICE_ATTR_WO(auto_update);
+static DEVICE_ATTR_TRACKED(RW, auto_update, TRACKSTATE_UNKNOWN);
 static DEVICE_ATTR_RO_KIND(channel_0, channel, REG_R_CH0_OFFSET);
 static DEVICE_ATTR_RO_KIND(channel_1, channel, REG_R_CH1_OFFSET);
 static DEVICE_ATTR_RO_KIND(channel_2, channel, REG_R_CH2_OFFSET);
@@ -154,7 +209,7 @@ static DEVICE_ATTR_RO_KIND(channel_7, channel, REG_R_CH7_OFFSET);
 // us.
 static struct attribute *adc_controller_attrs[] = {
     &dev_attr_update.attr,
-    &dev_attr_auto_update.attr,
+    &dev_attr_auto_update.attr.attr,
     &dev_attr_channel_0.attr.attr,
     &dev_attr_channel_1.attr.attr,
     &dev_attr_channel_2.attr.attr,
