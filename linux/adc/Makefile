@@ -1,6 +1,6 @@
 ifneq ($(KERNELRELEASE),)
 # kbuild part of makefile
-obj-m := hps_multi_pwm.o
+obj-m := adc_controller_de.o
 #CFLAGS_$(obj-m) := -DDEBUG
 
 else
