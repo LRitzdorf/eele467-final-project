@@ -68,7 +68,7 @@ static ssize_t period_show(struct device *dev,
     // Get the private hps_multi_pwm data out of the dev struct
     struct hps_multi_pwm_dev *priv = dev_get_drvdata(dev);
 
-    bool period = ioread32(priv->base_addr + REG_PERIOD_OFFSET);
+    u32 period = ioread32(priv->base_addr + REG_PERIOD_OFFSET);
 
     return scnprintf(buf, PAGE_SIZE, "0x%X\n", period);
 }
