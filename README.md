@@ -7,7 +7,15 @@
 
 This repository is the home of an FPGA-based final project for Montana State University's SoC FPGAs I course.
 
-At this stage, the project's objectives and scope have not yet been determined.
+This project implements:
+- Basic ADC and PWM control
+  - A driver for an ADC interface module (Intel's IP) in the FPGA fabric
+  - A custom multi-channel PWM module in the FPGA fabric
+  - A driver for the PWM module
+  - Userspace programs (C and shell) to drive the PWM module based on ADC channel values
+- Advanced accelerometer-based control
+  - Hardware reconfiguration steps to enable the DE10-Nano's on-board accelerometer
+  - Userspace control programs (C and shell)
 
 
 ## Structure
