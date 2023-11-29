@@ -89,7 +89,21 @@ static ssize_t update_store(struct device *dev,
     struct device_attribute *attr, const char *buf, size_t size)
 {
     struct adc_controller_dev *priv = dev_get_drvdata(dev);
-    iowrite32(1, priv->base_addr + REG_W_UPDATE_OFFSET);
+
+    // Parse the string we received as a bool
+    // See https://elixir.bootlin.com/linux/latest/source/lib/kstrtox.c#L289
+    bool update;
+    int ret = kstrtobool(buf, &update);
+    if (ret < 0) {
+        // kstrtobool returned an error
+        return ret;
+    }
+
+    // Writing any value (even zero) to the update register triggers an update,
+    // so if a falsy value is passed, we skip the write entirely.
+    if (update) {
+        iowrite32(1, priv->base_addr + REG_W_UPDATE_OFFSET);
+    }
     // Write was succesful, so we return the number of bytes we "wrote".
     return size;
 }
