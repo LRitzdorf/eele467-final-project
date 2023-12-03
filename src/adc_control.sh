@@ -55,9 +55,12 @@ function ctrl_c() { interrupted=true; }
 echo "Control loop running; interrupt to exit..."
 while [ ! $interrupted ]
 do
+    # Both register sets are fixed-point, and happen to have the same number of
+    # fractional bits. Were this not the case, bit shifting would be needed.
     cat "$ADC_PATH"/channel_0 > "$PWM_PATH"/duty_cycle_1
     cat "$ADC_PATH"/channel_1 > "$PWM_PATH"/duty_cycle_2
     cat "$ADC_PATH"/channel_2 > "$PWM_PATH"/duty_cycle_3
+    # Don't eat the CPU for breakfast
     sleep "$LOOP_DELAY"
 done
 
