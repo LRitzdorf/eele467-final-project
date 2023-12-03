@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 // Configuration constants
+#define SYSID_VERSION 0x3ADC37ED
 #define ADC_PATH "/sys/class/misc/adc_controller"
 #define PWM_PATH "/sys/class/misc/hps_multi_pwm"
 #define PERIOD 0x100 // 2ms
@@ -44,7 +45,36 @@ int dev_fprintf(FILE *stream, const char *format, ...) {
 
 int main(int argc, char** argv) {
 
-    { // TODO: Check System ID
+    { // Check System ID
+        // Scan for valid device files
+        glob_t globbuf;
+        if (glob("/sys/bus/platform/devices/*.sysid/sysid/id", GLOB_NOSORT, NULL, &globbuf) == GLOB_NOMATCH) {
+            fprintf(stderr, "No System ID device files found!\n");
+            return 1;
+        }
+
+        // Check device files for matching ID
+        bool sysid_match = false;
+        for (unsigned int i = 0; i < globbuf.gl_pathc; i++) {
+            // Open matched file and check for success
+            FILE *id_f = fopen(globbuf.gl_pathv[i], "r");
+            if (id_f == NULL) continue;
+            // Parse and compare ID
+            unsigned int id = 0;
+            fscanf(id_f, "%u", &id);
+            fclose(id_f);
+            if (id == SYSID_VERSION) {
+                sysid_match = true;
+                break;
+            }
+        }
+        globfree(&globbuf);
+
+        // Exit if nothing matched
+        if (!sysid_match) {
+            fprintf(stderr, "No matching System ID found! (Expected 0x%X)\n", SYSID_VERSION);
+            return 2;
+        }
     }
 
     // Initialization
