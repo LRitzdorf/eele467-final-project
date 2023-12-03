@@ -21,7 +21,7 @@ sysids=( /sys/bus/platform/devices/*.sysid/sysid/id )
 if [ "${#sysids[@]}" -lt 1 ]
 then
     echo "No System ID device files found!"
-    return 1
+    exit 1
 fi
 
 # Check device files for matching ID
@@ -39,7 +39,7 @@ done
 if [ ! $sysid_match ]
 then
     printf "No matching System ID found! (Expected 0x%X)\n" "$SYSID_VERSION"
-    return 2
+    exit 2
 fi
 
 
@@ -67,4 +67,4 @@ done
 # Cleanup
 echo 0 > "$PWM_PATH"/period
 
-return 0
+exit 0
