@@ -45,14 +45,23 @@ fi
 
 # Initialization
 echo "$PERIOD" > "$PWM_PATH"/period
+
+# Prepare to catch interrupts
+interrupted=false
+trap ctrl_c INT
+function ctrl_c() { interrupted=true; }
+
 # Main control loop
 echo "Control loop running; interrupt to exit..."
-while true
+while [ ! $interrupted ]
 do
     cat "$ADC_PATH"/channel_0 > "$PWM_PATH"/duty_cycle_1
     cat "$ADC_PATH"/channel_1 > "$PWM_PATH"/duty_cycle_2
     cat "$ADC_PATH"/channel_2 > "$PWM_PATH"/duty_cycle_3
     sleep "$LOOP_DELAY"
 done
+
 # Cleanup
 echo 0 > "$PWM_PATH"/period
+
+return 0
