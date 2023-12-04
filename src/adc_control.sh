@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Basic controller script to set PWM duty cycles based on ADC readings
 # Lucas Ritzdorf
@@ -53,7 +53,7 @@ function ctrl_c() { interrupted=true; }
 
 # Main control loop
 echo "Control loop running; interrupt to exit..."
-while [ ! $interrupted ]
+while [ $interrupted = false ]
 do
     # Both register sets are fixed-point, and happen to have the same number of
     # fractional bits. Were this not the case, bit shifting would be needed.
