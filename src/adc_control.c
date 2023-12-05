@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
     }
 
     // Initialization
-    FILE *period_f = fopen(PWM_PATH "/period", "r");
+    FILE *period_f = fopen(PWM_PATH "/period", "w");
     if (period_f == NULL) {
         perror("Failed to open PWM period file");
         return 3;
