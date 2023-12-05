@@ -44,7 +44,7 @@ int dev_fprintf(FILE *restrict stream, const char *restrict format, ...) {
 
 // Helper function, so we don't have to seek repeatedly
 int dev_fscanf(FILE *restrict stream, const char *restrict format, ...) {
-    rewind(stream);
+    freopen(NULL, "r", stream);  // Must re-open device file to update its contents
     va_list args;
     va_start(args, format);
     int result = vfscanf(stream, format, args);
