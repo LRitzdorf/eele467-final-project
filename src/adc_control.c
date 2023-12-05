@@ -32,7 +32,7 @@ static void ctrl_c(int _) {
 }
 
 // Helper function, so we don't have to seek and flush repeatedly
-int dev_fprintf(FILE *stream, const char *format, ...) {
+int dev_fprintf(FILE *restrict stream, const char *restrict format, ...) {
     rewind(stream);
     va_list args;
     va_start(args, format);
@@ -40,6 +40,16 @@ int dev_fprintf(FILE *stream, const char *format, ...) {
     va_end(args);
     fflush(stream);
     return bytes;
+}
+
+// Helper function, so we don't have to seek repeatedly
+int dev_fscanf(FILE *restrict stream, const char *restrict format, ...) {
+    rewind(stream);
+    va_list args;
+    va_start(args, format);
+    int result = vfscanf(stream, format, args);
+    va_end(args);
+    return result;
 }
 
 
@@ -84,9 +94,24 @@ int main(int argc, char** argv) {
         return 3;
     }
     FILE *channels[NUM_CHANNELS] = {NULL};
+    FILE *duty_cycles[NUM_CHANNELS] = {NULL};
     for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
-        // TODO: Loop-open channels and duty cycles
-        // On open failure, goto cleanup_files
+        char adcfile[sizeof(ADC_PATH) + 20];
+        char pwmfile[sizeof(PWM_PATH) + 20];
+        // Loop-open channel files...
+        snprintf(adcfile, sizeof(adcfile), ADC_PATH "/channel_%d", i);
+        channels[i] = fopen(adcfile, "r");
+        if (channels[i] == NULL) {
+            perror("Failed to open ADC channel");
+            goto cleanup_files;
+        }
+        // ...and duty cycle files
+        snprintf(pwmfile, sizeof(pwmfile), PWM_PATH "/duty_cycle_%d", i+1);
+        duty_cycles[i] = fopen(pwmfile, "w");
+        if (duty_cycles[i] == NULL) {
+            perror("Failed to open PWM interface");
+            goto cleanup_files;
+        }
     }
     dev_fprintf(period_f, xstr(PERIOD));
 
@@ -94,14 +119,18 @@ int main(int argc, char** argv) {
     signal(SIGINT, ctrl_c);
 
     // Main control loop
-    printf("Control loop running; interrupt to exit...");
+    printf("Control loop running; interrupt to exit...\n");
+    fflush(stdout);
     while (!interrupted) {
         /* Both register sets are fixed-point, and happen to have the same
          * number of fractional bits. Were this not the case, bit shifting
          * would be needed.
          */
         for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
-            // TODO: Loop-write channels and duty cycles
+            // Loop-write channels and duty cycles
+            unsigned int reading = 0;
+            dev_fscanf(channels[i], "%i", &reading);
+            dev_fprintf(duty_cycles[i], "%u", reading);
         }
         // NOTE: No waiting here. Time to eat the CPU for breakfast!
     }
@@ -110,7 +139,9 @@ int main(int argc, char** argv) {
     dev_fprintf(period_f, "0");
 cleanup_files:
     for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
-        // TODO: Loop-close channels and duty cycles
+        // Loop-close channels and duty cycles
+        if (channels[i] != NULL) fclose(channels[i]);
+        if (duty_cycles[i] != NULL) fclose(duty_cycles[i]);
     }
     fclose(period_f);
     return 0;
