@@ -1,0 +1,20 @@
+# Support cross-compilation
+CROSS_COMPILE ?= arm-linux-gnueabihf-
+CC = $(CROSS_COMPILE)gcc
+
+CFLAGS += -Wall
+BUILD_DIR ?= bin/
+
+.PHONY: clean
+
+
+all: adc_control
+
+adc_control: adc_control.c | builddir
+	$(CC) $(CFLAGS) adc_control.c -o $(BUILD_DIR)adc_control
+
+builddir:
+	mkdir -p $(BUILD_DIR)
+
+clean:
+	rm -rf $(BUILD_DIR)
