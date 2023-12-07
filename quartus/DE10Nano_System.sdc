@@ -6,7 +6,7 @@
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK1_50]
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK2_50]
 create_clock -period "50.0 MHz"  [get_ports FPGA_CLK3_50]
-create_clock -period "400.0 kHz" [get_ports HPS_I2C1_SCLK]
+create_clock -period "400.0 kHz" [get_ports HPS_I2C0_SCLK]
 
 # HPS Clocks
 create_clock -period "125.0 MHz" [get_ports HPS_ENET_RX_CLK]
@@ -77,7 +77,7 @@ set_clock_groups -asynchronous \
 									FPGA_CLK3_50 \
 						       } \
 						-group { altera_reserved_tck } \
-						-group { HPS_I2C1_SCLK } 
+						-group { HPS_I2C0_SCLK } 
 
 #**************************************************************
 # Set Input Delay
@@ -123,12 +123,10 @@ set_input_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_in [get_ports {KEY[
 set_input_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_in [get_ports {KEY[1]}]
 set_input_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_in [get_ports {HPS_UART_RX}]
 set_input_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_in [get_ports {HPS_UART_RX}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -min $mintime_i2cclk_in [get_ports {HPS_I2C1_SDAT}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -max $maxtime_i2cclk_in [get_ports {HPS_I2C1_SDAT}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -min $mintime_i2cclk_in [get_ports {TPA6130_i2c_SCL}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -max $maxtime_i2cclk_in [get_ports {TPA6130_i2c_SCL}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -min $mintime_i2cclk_in [get_ports {TPA6130_i2c_SDA}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -max $maxtime_i2cclk_in [get_ports {TPA6130_i2c_SDA}]
+set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -min $mintime_i2cclk_in [get_ports {HPS_I2C0_SCLK}]
+set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -max $maxtime_i2cclk_in [get_ports {HPS_I2C0_SCLK}]
+set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -min $mintime_i2cclk_in [get_ports {HPS_I2C0_SDAT}]
+set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_i2c0|out_clk } -max $maxtime_i2cclk_in [get_ports {HPS_I2C0_SDAT}]
 set_input_delay -clock { HPS_ENET_RX_CLK } -min $mintime_eclk_in [get_ports {HPS_ENET_MDIO}]
 set_input_delay -clock { HPS_ENET_RX_CLK } -max $maxtime_eclk_in [get_ports {HPS_ENET_MDIO}]
 set_input_delay -clock { HPS_ENET_RX_CLK } -min $mintime_eclk_in [get_ports {HPS_ENET_RX_DATA[*]}]
@@ -202,15 +200,11 @@ set mindelays 5
 
 set_max_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|intermediate[0]} -to [get_ports {HPS_ENET_MDIO}] $maxdelays
 set_max_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|intermediate[1]} -to [get_ports {HPS_ENET_MDIO}] $maxdelays
-set_max_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|i2c1_inst~FF_4791} -to [get_ports {HPS_I2C1_SDAT}] $maxdelays
-set_max_delay -from {u0|hps|fpga_interfaces|peripheral_i2c0|out_clk} -to [get_ports {TPA6130_i2c_SCL}] $maxdelays
-set_max_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_fpga_interfaces:fpga_interfaces|peripheral_i2c0~FF_4791} -to [get_ports {TPA6130_i2c_SDA}] $maxdelays
+set_max_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|i2c0_inst~FF_4791} -to [get_ports {HPS_I2C0_SDAT}] $maxdelays
 
 set_min_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|intermediate[0]} -to [get_ports {HPS_ENET_MDIO}] $mindelays
 set_min_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|intermediate[1]} -to [get_ports {HPS_ENET_MDIO}] $mindelays
-set_min_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|i2c1_inst~FF_4791} -to [get_ports {HPS_I2C1_SDAT}] $mindelays
-set_min_delay -from {u0|hps|fpga_interfaces|peripheral_i2c0|out_clk} -to [get_ports {TPA6130_i2c_SCL}] $mindelays
-set_min_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_fpga_interfaces:fpga_interfaces|peripheral_i2c0~FF_4791} -to [get_ports {TPA6130_i2c_SDA}] $mindelays
+set_min_delay -from {soc_system:u0|soc_system_hps:hps|soc_system_hps_hps_io:hps_io|soc_system_hps_hps_io_border:border|i2c0_inst~FF_4791} -to [get_ports {HPS_I2C0_SDAT}] $mindelays
 
 #**************************************************************
 # Set False Path

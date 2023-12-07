@@ -102,9 +102,6 @@ set_location_assignment PIN_AG25 -to AD1939_ADC_ASDATA2
 set_location_assignment PIN_AH24 -to AD1939_DAC_DBCLK
 set_location_assignment PIN_AF25 -to AD1939_DAC_DLRCLK
 set_location_assignment PIN_AF23 -to AD1939_DAC_DSDATA1
-set_location_assignment PIN_AD26 -to TPA6130_i2c_SDA
-set_location_assignment PIN_AC24 -to TPA6130_i2c_SCL
-set_location_assignment PIN_AH27 -to TPA6130_power_off
 set_location_assignment PIN_C12 -to INMP621_mic_CLK
 set_location_assignment PIN_AD17 -to INMP621_mic_DATA
 set_location_assignment PIN_AE19 -to Audio_Mini_LEDs[0]
@@ -385,8 +382,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_GSENSOR_INT
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_I2C0_SCLK
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_I2C0_SDAT
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_I2C1_SCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_I2C1_SDAT
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_KEY
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_LED
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_LTC_GPIO
@@ -529,7 +524,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[1]
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[2]
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TPA6130_i2c_SCL
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_COUT
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_CLATCH_n
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_CIN
@@ -554,8 +548,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to INMP621_mic_CLK
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to INMP621_mic_DATA
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TPA6130_i2c_SDA
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to TPA6130_power_off
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[31]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[32]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[30]

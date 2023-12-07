@@ -95,14 +95,6 @@ entity DE10Nano_System is
         AD1939_DAC_DSDATA1  : out   std_logic; --! Serial data to   AD1939 pin 20 DSDATA1, DAC1 24-bit normal stereo serial mode
 
         ----------------------------------------
-        --  Headphone Amplifier TI TPA6130
-        --  Physical connection signals
-        ----------------------------------------
-        TPA6130_i2c_SDA   : inout std_logic;
-        TPA6130_i2c_SCL   : inout std_logic;
-        TPA6130_power_off : out   std_logic;
-
-        ----------------------------------------
         --  Digital Microphone INMP621
         --  Physical connection signals
         ----------------------------------------
@@ -166,8 +158,6 @@ entity DE10Nano_System is
         HPS_GSENSOR_INT  : inout std_logic;
         HPS_I2C0_SCLK    : inout std_logic;
         HPS_I2C0_SDAT    : inout std_logic;
-        HPS_I2C1_SCLK    : inout std_logic;
-        HPS_I2C1_SDAT    : inout std_logic;
         HPS_KEY          : inout std_logic;
         HPS_LED          : inout std_logic;
         HPS_LTC_GPIO     : inout std_logic;
@@ -240,18 +230,14 @@ architecture DE10Nano_arch of DE10Nano_System is
             hps_hps_io_hps_io_spim1_inst_SS0    : out   std_logic;
             hps_hps_io_hps_io_uart0_inst_RX     : in    std_logic;
             hps_hps_io_hps_io_uart0_inst_TX     : out   std_logic;
-            hps_hps_io_hps_io_i2c1_inst_SDA     : inout std_logic;
-            hps_hps_io_hps_io_i2c1_inst_SCL     : inout std_logic;
+            hps_hps_io_hps_io_i2c0_inst_SDA     : inout std_logic;
+            hps_hps_io_hps_io_i2c0_inst_SCL     : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO09  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO35  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO40  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO53  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO54  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO61  : inout std_logic;
-            hps_i2c0_out_data                   : out   std_logic;
-            hps_i2c0_sda                        : in    std_logic;
-            hps_i2c0_clk_clk                    : out   std_logic;
-            hps_i2c0_scl_in_clk                 : in    std_logic;
             hps_spim0_txd                       : out   std_logic;
             hps_spim0_rxd                       : in    std_logic;
             hps_spim0_ss_in_n                   : in    std_logic;
@@ -286,30 +272,6 @@ architecture DE10Nano_arch of DE10Nano_System is
         );
     end component soc_system;
 
-    ------------------------------------------------------------
-    -- Tristate buffer with pullup for i2c lines
-    ------------------------------------------------------------
-    component alt_iobuf is
-        generic (
-            io_standard           : string  := "3.3-V LVTTL";
-            current_strength      : string  := "maximum current";
-            slew_rate             : integer := -1;
-            slow_slew_rate        : string  := "NONE";
-            location              : string  := "NONE";
-            enable_bus_hold       : string  := "NONE";
-            weak_pull_up_resistor : string  := "ON";
-            termination           : string  := "NONE";
-            input_termination     : string  := "NONE";
-            output_termination    : string  := "NONE"
-        );
-        port (
-            i  : in    std_logic;
-            oe : in    std_logic;
-            io : inout std_logic;
-            o  : out   std_logic
-        );
-    end component;
-
     ---------------------------------------------------------
     -- Signal declarations
     ---------------------------------------------------------
@@ -320,11 +282,6 @@ architecture DE10Nano_arch of DE10Nano_System is
     signal hps_warm_reset  : std_logic;
     signal hps_debug_reset : std_logic;
     signal hps_h2f_reset   : std_logic;
-
-    signal i2c_0_i2c_serial_sda_in : std_logic;
-    signal i2c_serial_scl_in       : std_logic;
-    signal i2c_serial_sda_oe       : std_logic;
-    signal serial_scl_oe           : std_logic;
 
     signal system_rst  : std_logic;                    --! Global reset pin
     signal Push_Button : std_logic_vector(1 downto 0); --! a better description of KEY input, which should really be labelled as KEY_n
@@ -350,11 +307,6 @@ begin
     AD1939_RST_CODEC_n <= '1'; -- hold AD1939 out of reset
 
     -------------------------------------------------------
-    -- TPA6130
-    -------------------------------------------------------
-    TPA6130_power_off <= '1'; --! Enable the headphone amplifier output
-
-    -------------------------------------------------------
     -- HPS
     -------------------------------------------------------
     hps_cold_reset  <= '0';
@@ -376,12 +328,6 @@ begin
             hps_spim0_ss_2_n       => open,
             hps_spim0_ss_3_n       => open,
             hps_spim0_sclk_out_clk => AD1939_spi_CCLK,
-
-            -- HPS I2C #1 connection to TPA6130
-            hps_i2c0_out_data   => i2c_serial_sda_oe,
-            hps_i2c0_sda        => i2c_0_i2c_serial_sda_in,
-            hps_i2c0_clk_clk    => serial_scl_oe,
-            hps_i2c0_scl_in_clk => i2c_serial_scl_in,
 
             -- HPS Clock and Reset
             clk_clk                         => FPGA_CLK1_50,
@@ -439,9 +385,9 @@ begin
             hps_hps_io_hps_io_uart0_inst_RX => HPS_UART_RX,
             hps_hps_io_hps_io_uart0_inst_TX => HPS_UART_TX,
 
-            -- HPS I2C #2
-            hps_hps_io_hps_io_i2c1_inst_SDA => HPS_I2C1_SDAT,
-            hps_hps_io_hps_io_i2c1_inst_SCL => HPS_I2C1_SCLK,
+            -- HPS I2C 0 to G-Sensor
+            hps_hps_io_hps_io_i2c0_inst_SDA => HPS_I2C0_SDAT,
+            hps_hps_io_hps_io_i2c0_inst_SCL => HPS_I2C0_SCLK,
 
             -- HPS GPIO
             hps_hps_io_hps_io_gpio_inst_GPIO09 => HPS_CONV_USB_N,
@@ -477,26 +423,6 @@ begin
 
             -- PWM outputs, in ascending order
             pwms_out_channels => LED_GPIOs
-        );
-
-
-    ---------------------------------------------------------------------------------------------
-    -- Tri-state buffer the I2C signals
-    ---------------------------------------------------------------------------------------------
-    ubuf1 : component alt_iobuf
-        port map (
-            i  => '0',
-            oe => i2c_serial_sda_oe,
-            io => TPA6130_i2c_SDA,
-            o  => i2c_0_i2c_serial_sda_in
-        );
-
-    ubuf2 : component alt_iobuf
-        port map (
-            i  => '0',
-            oe => serial_scl_oe,
-            io => TPA6130_i2c_SCL,
-            o  => i2c_serial_scl_in
         );
 
 
