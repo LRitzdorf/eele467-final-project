@@ -15,7 +15,7 @@ This project implements:
   - Userspace programs (C and shell) to drive the PWM module based on ADC channel values
 - Advanced accelerometer-based control
   - Hardware reconfiguration steps to enable the DE10-Nano's on-board accelerometer
-  - Userspace control programs (C and shell)
+  - Userspace control program to drive PWM module based on orientation
 
 
 ## Structure
