@@ -141,33 +141,43 @@ int main(int argc, char** argv) {
     }
 
     // Initialize hardware
-    //libevdev_disable_event_type(accel, EV_ABS); // No accelerometer updates for now
+    bool accel_mode = false;
+    libevdev_disable_event_type(accel, EV_ABS); // No accelerometer updates for now
     dev_fprintf(period_f, xstr(PERIOD));
 
     // Prepare to catch interrupts
     signal(SIGINT, ctrl_c);
 
     printf("Control loop running; interrupt to exit...\n");
-    fflush(stdout);
+    printf("ADC mode\r"); fflush(stdout);
     int accel_vec[3] = {0};
     // Main control loop
     while (!interrupted) {
 
         // Handle any pending accelerometer events
-        bool update = false;
         while (libevdev_has_event_pending(accel)) {
             struct input_event event;
             libevdev_next_event(accel, LIBEVDEV_READ_FLAG_NORMAL, &event);
             switch (event.type) {
                 case EV_KEY:
-                    // Tap event; TODO: switch control modes
+                    // Tap event; switch control modes
                     if (event.value == 1) {
-                        printf("\nTapped!\n");
+                        if (accel_mode) {
+                            accel_mode = false;
+                            libevdev_disable_event_type(accel, EV_ABS);
+                            printf("ADC mode  \r"); fflush(stdout);
+                        } else {
+                            accel_mode = true;
+                            libevdev_enable_event_type(accel, EV_ABS);
+                            printf("Accel mode\r"); fflush(stdout);
+                        }
                     }
                     break;
                 case EV_ABS:
-                    update = true;
                     // Accelerometer event; record updated values
+                    /* This won't trigger if we're not in "accelerometer mode,"
+                     * since we disable the corresponding event type.
+                     */
                     switch (event.code) {
                         case ABS_X:
                             accel_vec[0] = event.value;
@@ -183,27 +193,29 @@ int main(int argc, char** argv) {
                 default: break;
             }
         }
-        // TODO: Enable accelerometer
-        //libevdev_enable_event_type(accel, EV_ABS); // Allow accelerometer updates
-        // TODO: Process this data somehow
-        if (update) {
-            printf("\rAccel X: %d, Y: %d, Z: %d  ", accel_vec[0], accel_vec[1], accel_vec[2]);
-            fflush(stdout);
-        }
 
-        /* Both register sets are fixed-point, and happen to have the same
-         * number of fractional bits. Were this not the case, bit shifting
-         * would be needed.
-         */
-        for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
-            // Loop-write channels and duty cycles
-            unsigned int reading = 0;
-            dev_fscanf(channels[i], "%i", &reading);
-            dev_fprintf(duty_cycles[i], "%u", reading);
+        // Control the PWM module
+        if (accel_mode) {
+            for (unsigned int i = 0; i < 3; i++) {
+                // Loop-write duty cycles based on accelerometer values
+                dev_fprintf(duty_cycles[i], "%u", accel_vec[i]);
+            }
+        } else {
+            /* Both register sets are fixed-point, and happen to have the same
+             * number of fractional bits. Were this not the case, bit shifting
+             * would be needed.
+             */
+            for (unsigned int i = 0; i < NUM_CHANNELS; i++) {
+                // Loop-write channels and duty cycles
+                unsigned int reading = 0;
+                dev_fscanf(channels[i], "%i", &reading);
+                dev_fprintf(duty_cycles[i], "%u", reading);
+            }
         }
 
         // NOTE: No waiting here. Time to eat the CPU for breakfast!
     }
+    printf("\nCaught interrupt; exiting...\n");
 
     // Cleanup
     dev_fprintf(period_f, "0");
