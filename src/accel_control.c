@@ -57,6 +57,46 @@ int dev_fscanf(FILE *restrict stream, const char *restrict format, ...) {
     return result;
 }
 
+// HSL to RGB conversion helper
+void hsl2rgb(const float *hsl, float *rgb) {
+    // Based on https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB
+    float chroma = (1 - fabsf(2 * hsl[2] - 1)) * hsl[1];
+    float h_prime = hsl[0] / (M_PI/3);
+    float other_comp = chroma * (1 - fabsf(fmodf(h_prime, 2) - 1));
+    // Assign color components
+    if        (h_prime < 1) {
+        rgb[0] = chroma;
+        rgb[1] = other_comp;
+        rgb[2] = 0;
+    } else if (h_prime < 2) {
+        rgb[0] = other_comp;
+        rgb[1] = chroma;
+        rgb[2] = 0;
+    } else if (h_prime < 3) {
+        rgb[0] = 0;
+        rgb[1] = chroma;
+        rgb[2] = other_comp;
+    } else if (h_prime < 4) {
+        rgb[0] = 0;
+        rgb[1] = other_comp;
+        rgb[2] = chroma;
+    } else if (h_prime < 5) {
+        rgb[0] = other_comp;
+        rgb[1] = 0;
+        rgb[2] = chroma;
+    } else  /* h_prime < 6 */ {
+        rgb[0] = chroma;
+        rgb[1] = 0;
+        rgb[2] = other_comp;
+    }
+    // Match lightness
+    float m = hsl[2] - (chroma/2);
+    rgb[0] += m;
+    rgb[1] += m;
+    rgb[2] += m;
+    return;
+}
+
 
 int main(int argc, char** argv) {
 
@@ -200,12 +240,18 @@ int main(int argc, char** argv) {
             // Calculate roll and pitch angles
             float roll = atan2(-(float)accel_vec[1], (float)accel_vec[2]);
             float pitch = atan2(-(float)accel_vec[0], sqrt(powf(accel_vec[1], 2) + powf(accel_vec[2], 2)));
-            int roll_norm = roll / (2*M_PI) * pow(2, 12);
-            int pitch_norm = pitch / (2*M_PI) * pow(2, 12);
-            // Write derived colors to PWM controller
-            dev_fprintf(duty_cycles[0], "%u", roll_norm);
-            dev_fprintf(duty_cycles[1], "%u", pitch_norm);
-            dev_fprintf(duty_cycles[2], "%u", 0);
+            // Transform to HSL...
+            float hsl[3], rgb[3];
+            // roll -> hue, saturation = 1, pitch -> lightness
+            hsl[0] = roll + M_PI;
+            hsl[1] = 1;
+            hsl[2] = (pitch / (M_PI)) + 0.5;
+            // ...and then to RGB
+            hsl2rgb(hsl, rgb);
+            // Write RGB values to PWM controller
+            for (unsigned int i = 0; i < 3; i++) {
+                dev_fprintf(duty_cycles[i], "%u", (int)(rgb[i] * pow(2, 12)));
+            }
         } else {
             /* Both register sets are fixed-point, and happen to have the same
              * number of fractional bits. Were this not the case, bit shifting
