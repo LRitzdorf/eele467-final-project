@@ -12,6 +12,7 @@
 #include <fcntl.h>
 #include <libevdev-1.0/libevdev/libevdev.h>
 #include <signal.h>
+#include <math.h>
 #include <stdarg.h>
 
 // Configuration constants
@@ -196,10 +197,15 @@ int main(int argc, char** argv) {
 
         // Control the PWM module
         if (accel_mode) {
-            for (unsigned int i = 0; i < 3; i++) {
-                // Loop-write duty cycles based on accelerometer values
-                dev_fprintf(duty_cycles[i], "%u", accel_vec[i]);
-            }
+            // Calculate roll and pitch angles
+            float roll = atan2(-(float)accel_vec[1], (float)accel_vec[2]);
+            float pitch = atan2(-(float)accel_vec[0], sqrt(powf(accel_vec[1], 2) + powf(accel_vec[2], 2)));
+            int roll_norm = roll / (2*M_PI) * pow(2, 12);
+            int pitch_norm = pitch / (2*M_PI) * pow(2, 12);
+            // Write derived colors to PWM controller
+            dev_fprintf(duty_cycles[0], "%u", roll_norm);
+            dev_fprintf(duty_cycles[1], "%u", pitch_norm);
+            dev_fprintf(duty_cycles[2], "%u", 0);
         } else {
             /* Both register sets are fixed-point, and happen to have the same
              * number of fractional bits. Were this not the case, bit shifting
