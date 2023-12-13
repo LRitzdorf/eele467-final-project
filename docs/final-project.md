@@ -54,12 +54,36 @@ This driver primarily exposes hardware registers, just as the PWM driver does.
 However, one register in particular has something of a twist: the "auto-update" register is write-only in hardware, and thus could be exposed as a write-only sysfs entry.
 In this case, though, clever software design mostly mitigates this unusual hardware choice — the driver begins tracking the state of this register upon its first write, allowing for read operations which draw from driver memory rather than actually reading the underlying hardware register.
 
+**Userspace Control Software:**
+The basic control program, which runs in userspace, is provided in two forms: a Bash script, and a C program.
+Both implement essentially the same functionality.
+The control programs begin by searching for available Altera System ID devices and checking that a matching ID is present, which allows them to be sure that the expected hardware has indeed been programmed into the FPGA fabric.
+They then enter a main loop, in which they simply retrieve readings from the ADC driver and relay them to the PWM driver (via their respective sysfs interfaces).
+This effectively allows the user to control the RGB LED's three color channels by varying the ADC's voltage inputs.
+
 ### Accelerometer Functionality
 
-TODO
+In addition to its basic functional mode, the system can operate in an advanced mode which incorporates accelerometer-based control.
+When the advanced control program is running, it monitors the accelerometer's event stream for "key" events, which are sent when the accelerometer detects motion consistent with a tap.
+This event cues the control program to switch into its advanced control mode, where it:
+- Translates raw accelerometer data into attitude parameters (i.e. roll and pitch);
+- Composes an [HSL](https://en.m.wikipedia.org/wiki/HSL_and_HSV) color with hue and lightness based on the device's attitude;
+- Converts the HSL color to RGB format and relays the resulting color channels to the PWM module.
+Subsequent tap events continue to toggle between operational modes.
+
+This project element required that specific pin multiplexing settings within the hard processor system be changed.
+This, in turn, required the creation of a custom U-Boot preloader and bootable SD card image.
+The details of this process, in the form of a step-by-step guide, are recorded in the [`boot` README](/boot/README.md).
 
 
 ## Conclusion
 
-Make a conclusion and relate your experience regarding the creation and execution of your project.
-What would you improve regarding the course?
+Given my prior experience with Linux systems in general, and the ease with which I was able to complete the instructional component of this course, implementing the basic functionality of this project was rather straightforward.
+The advanced functional mode was more involved, primarily due to the need to recreate an entire bootable SD card image; however, I particularly enjoyed this element of the project.
+In my opinion, it was an ideal blend of familiar and novel material, which allowed me to learn far more about the HPS boot process while not being dangerously out of my depth.
+In addition, the resulting boot-image guide (linked above) should help to eliminate a source of technical debt from this class, both for present and future instructors.
+
+I do have one minor suggestion regarding the starter material and project templates provided in this course.
+While I recognize that our eventual goal (in SoC FPGAs II) is to interface with the AudioMini add-on board, many of the templates used here include cruft from the AudioMini project, which ranges from simply annoying to actively confusing for students.
+The GPIO signal naming conventions in the top-level `DE10Nano_System.vhd` file are a key example of the latter case.
+If possible, removing or otherwise cleaning up these elements might be helpful for future students.
