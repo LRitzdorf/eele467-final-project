@@ -14,7 +14,7 @@ adc_control: adc_control.c | builddir
 	$(CC) $(CFLAGS) adc_control.c -o $(BUILD_DIR)adc_control
 
 accel_control: accel_control.c | builddir
-	$(CC) $(CFLAGS) accel_control.c -o $(BUILD_DIR)accel_control
+	$(CC) $(CFLAGS) accel_control.c -levdev -lm -o $(BUILD_DIR)accel_control
 
 builddir:
 	@mkdir -p $(BUILD_DIR)
