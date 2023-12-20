@@ -237,7 +237,7 @@
    kind="altera_avalon_sysid_qsys"
    version="21.1"
    enabled="1">
-  <parameter name="id" value="-1395322110" />
+  <parameter name="id" value="987510765" />
  </module>
  <module name="adc_0" kind="altera_up_avalon_adc" version="18.0" enabled="1">
   <parameter name="AUTO_CLK_CLOCK_RATE" value="12500000" />
