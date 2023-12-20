@@ -214,12 +214,8 @@
  <interface name="hps_i2c0" internal="hps.i2c0" />
  <interface name="hps_i2c0_clk" internal="hps.i2c0_clk" />
  <interface name="hps_i2c0_scl_in" internal="hps.i2c0_scl_in" />
- <interface name="hps_spim0" internal="hps.spim0" type="conduit" dir="end" />
- <interface
-   name="hps_spim0_sclk_out"
-   internal="hps.spim0_sclk_out"
-   type="clock"
-   dir="start" />
+ <interface name="hps_spim0" internal="hps.spim0" />
+ <interface name="hps_spim0_sclk_out" internal="hps.spim0_sclk_out" />
  <interface name="memory" internal="hps.memory" type="conduit" dir="end" />
  <interface name="pwms" internal="HPS_Multi_PWM_0.pwms" type="conduit" dir="end" />
  <interface name="reset" internal="clk_hps.clk_in_reset" type="reset" dir="end" />
@@ -629,10 +625,10 @@
   <parameter name="SKIP_MEM_INIT" value="true" />
   <parameter name="SOPC_COMPAT_RESET" value="false" />
   <parameter name="SPEED_GRADE" value="7" />
-  <parameter name="SPIM0_Mode" value="Full" />
-  <parameter name="SPIM0_PinMuxing" value="FPGA" />
-  <parameter name="SPIM1_Mode" value="Single Slave Select" />
-  <parameter name="SPIM1_PinMuxing" value="HPS I/O Set 0" />
+  <parameter name="SPIM0_Mode" value="N/A" />
+  <parameter name="SPIM0_PinMuxing" value="Unused" />
+  <parameter name="SPIM1_Mode" value="N/A" />
+  <parameter name="SPIM1_PinMuxing" value="Unused" />
   <parameter name="SPIS0_Mode" value="N/A" />
   <parameter name="SPIS0_PinMuxing" value="Unused" />
   <parameter name="SPIS1_Mode" value="N/A" />

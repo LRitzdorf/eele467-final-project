@@ -93,7 +93,6 @@ set maxtime_lrclk_in  0.200
 set maxtime_bclk_in   0.200
 set maxtime_mclk_in   0.200
 set maxtime_sysclk_in 0.300
-set maxtime_spiclk_in 0.200
 set maxtime_i2cclk_in 0.200
 set maxtime_sdclk_in  0.200
 set maxtime_eclk_in   0.200
@@ -102,23 +101,10 @@ set mintime_lrclk_in  0.200
 set mintime_bclk_in   0.900
 set mintime_mclk_in   0.200
 set mintime_sysclk_in 0.300
-set mintime_spiclk_in 0.200
 set mintime_i2cclk_in 0.200
 set mintime_sdclk_in  0.200
 set mintime_eclk_in   0.200
 
-set_input_delay -clock { AD1939_ADC_ABCLK } -min $mintime_bclk_in [get_ports {AD1939_ADC_ABCLK}]
-set_input_delay -clock { AD1939_ADC_ABCLK } -max $maxtime_bclk_in [get_ports {AD1939_ADC_ABCLK}]
-set_input_delay -clock { AD1939_ADC_ABCLK } -min $mintime_bclk_in [get_ports {AD1939_ADC_ASDATA2}]
-set_input_delay -clock { AD1939_ADC_ABCLK } -max $maxtime_bclk_in [get_ports {AD1939_ADC_ASDATA2}]
-set_input_delay -clock { AD1939_ADC_ALRCLK } -min $mintime_lrclk_in [get_ports {AD1939_ADC_ALRCLK}]
-set_input_delay -clock { AD1939_ADC_ALRCLK } -max $maxtime_lrclk_in [get_ports {AD1939_ADC_ALRCLK}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_in [get_ports {HPS_SPIM_MISO}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_in [get_ports {HPS_SPIM_MISO}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_in [get_ports {AD1939_spi_COUT}]
-set_input_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_in [get_ports {AD1939_spi_COUT}]
-set_input_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_in [get_ports {Audio_Mini_SWITCHES[*]}]
-set_input_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_in [get_ports {Audio_Mini_SWITCHES[*]}]
 set_input_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_in [get_ports {KEY[1]}]
 set_input_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_in [get_ports {KEY[1]}]
 set_input_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_in [get_ports {HPS_UART_RX}]
@@ -145,7 +131,6 @@ set maxtime_lrclk_out  0.200
 set maxtime_bclk_out   0.200
 set maxtime_mclk_out   0.200
 set maxtime_sysclk_out 0.500
-set maxtime_spiclk_out 0.200
 set maxtime_i2cclk_out 0.300
 set maxtime_sdclk_out  0.200
 set maxtime_eclk_out   0.200
@@ -154,29 +139,10 @@ set mintime_lrclk_out  0.200
 set mintime_bclk_out   0.200
 set mintime_mclk_out   0.200
 set mintime_sysclk_out 0.200
-set mintime_spiclk_out 0.200
 set mintime_i2cclk_out 0.300
 set mintime_sdclk_out  0.200
 set mintime_eclk_out   0.200
 
-set_output_delay -clock { AD1939_ADC_ABCLK } -min $mintime_bclk_out [get_ports {AD1939_DAC_DBCLK}]
-set_output_delay -clock { AD1939_ADC_ABCLK } -max $maxtime_bclk_out [get_ports {AD1939_DAC_DBCLK}]
-set_output_delay -clock { AD1939_ADC_ABCLK } -min $mintime_bclk_out [get_ports {AD1939_DAC_DSDATA1}]
-set_output_delay -clock { AD1939_ADC_ABCLK } -max $maxtime_bclk_out [get_ports {AD1939_DAC_DSDATA1}]
-set_output_delay -clock { AD1939_ADC_ALRCLK } -min $maxtime_lrclk_out [get_ports {AD1939_DAC_DLRCLK}]
-set_output_delay -clock { AD1939_ADC_ALRCLK } -max $mintime_lrclk_out [get_ports {AD1939_DAC_DLRCLK}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_out [get_ports {AD1939_spi_CCLK}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_out [get_ports {AD1939_spi_CCLK}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_out [get_ports {AD1939_spi_CIN}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_out [get_ports {AD1939_spi_CIN}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_out [get_ports {AD1939_spi_CLATCH_n}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_out [get_ports {AD1939_spi_CLATCH_n}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_out [get_ports {HPS_SPIM_MOSI}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_out [get_ports {HPS_SPIM_MOSI}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -min $mintime_spiclk_out [get_ports {HPS_SPIM_SS}]
-set_output_delay -clock { u0|hps|fpga_interfaces|peripheral_spim0|sclk_out } -max $maxtime_spiclk_out [get_ports {HPS_SPIM_SS}]
-set_output_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_out [get_ports {Audio_Mini_LEDs[*]}]
-set_output_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_out [get_ports {Audio_Mini_LEDs[*]}]
 set_output_delay -clock { FPGA_CLK1_50 } -min $mintime_sysclk_out [get_ports {HPS_UART_TX}]
 set_output_delay -clock { FPGA_CLK1_50 } -max $maxtime_sysclk_out [get_ports {HPS_UART_TX}]
 set_output_delay -clock { HPS_ENET_RX_CLK } -min $mintime_eclk_out [get_ports {HPS_ENET_GTX_CLK}]
