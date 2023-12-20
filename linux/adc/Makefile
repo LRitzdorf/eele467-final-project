@@ -8,8 +8,6 @@ else
 
 # default environment variables
 KDIR ?= ~/linux-socfpga
-export ARCH ?= arm
-export CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 # full make command
 MAKECMD = $(MAKE) -C $(KDIR) M=$$PWD
