@@ -394,10 +394,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SD_DATA[1]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SD_DATA[2]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SD_DATA[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SPIM_CLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SPIM_MISO
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SPIM_MOSI
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_SPIM_SS
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_UART_RX
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_UART_TX
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to KEY[0]
@@ -527,78 +523,6 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[1]
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[2]
 	set_instance_assignment -name OUTPUT_TERMINATION "SERIES 50 OHM WITH CALIBRATION" -to HPS_DDR3_DM[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_COUT
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_CLATCH_n
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_CIN
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_spi_CCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_MCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_DAC_DSDATA1
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_DAC_DLRCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_DAC_DBCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_ADC_ALRCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_ADC_ASDATA2
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AD1939_ADC_ABCLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_LEDs[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_LEDs[2]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_LEDs[1]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_LEDs[0]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_LEDs
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES[2]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES[1]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES[0]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_SWITCHES
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to INMP621_mic_CLK
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to INMP621_mic_DATA
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[31]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[32]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[30]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[29]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[28]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[27]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[26]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[25]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[24]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[22]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[0]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[9]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[10]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[1]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[2]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[4]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[5]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[6]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[7]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[8]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[11]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[0]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[1]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[2]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[3]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[4]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[5]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[6]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[7]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[8]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[9]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[10]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[11]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[12]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[13]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[14]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[15]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[16]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[17]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[18]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[19]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[20]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[21]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[23]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_0[33]
-	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to Audio_Mini_GPIO_1[12]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_CLKOUT
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_DATA[0]
 	set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to HPS_USB_DATA[1]
