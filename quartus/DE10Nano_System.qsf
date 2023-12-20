@@ -645,6 +645,15 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 # end ENTITY(altera_avalon_sc_fifo)
 # ---------------------------------
 
+# ------------------------------------------------------
+# start ENTITY(altera_avalon_st_handshake_clock_crosser)
+
+	# Project-Wide Assignments
+	# ========================
+
+# end ENTITY(altera_avalon_st_handshake_clock_crosser)
+# ----------------------------------------------------
+
 # -----------------------------------------
 # start ENTITY(altera_merlin_axi_master_ni)
 
@@ -719,6 +728,15 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 
 # end ENTITY(soc_system_SystemID)
 # -------------------------------
+
+# ------------------------------
+# start ENTITY(soc_system_adc_0)
+
+	# Project-Wide Assignments
+	# ========================
+
+# end ENTITY(soc_system_adc_0)
+# ----------------------------
 
 # ----------------------------
 # start ENTITY(soc_system_hps)
@@ -945,6 +963,15 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 # end ENTITY(soc_system_mm_interconnect_1_rsp_demux)
 # --------------------------------------------------
 
+# --------------------------------------------------------
+# start ENTITY(soc_system_mm_interconnect_1_rsp_demux_001)
+
+	# Project-Wide Assignments
+	# ========================
+
+# end ENTITY(soc_system_mm_interconnect_1_rsp_demux_001)
+# ------------------------------------------------------
+
 # --------------------------------------------------
 # start ENTITY(soc_system_mm_interconnect_1_rsp_mux)
 
@@ -962,3 +989,12 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 
 # end ENTITY(soc_system_onchip_memory)
 # ------------------------------------
+
+# ------------------------------
+# start ENTITY(soc_system_pll_0)
+
+	# Project-Wide Assignments
+	# ========================
+
+# end ENTITY(soc_system_pll_0)
+# ----------------------------
