@@ -59,53 +59,9 @@ entity DE10Nano_System is
         --  Pin 11 = 5V supply (1A max)
         --  Pin 29 - 3.3 supply (1.5A max)
         --  Pins 12, 30 GND
-        --  Note: the DE10-Nano GPIO_0 & GPIO_1 signals
-        --  have been replaced by
-        --  Audio_Mini_GPIO_0 & Audio_Mini_GPIO_1
-        --  since some of the DE10-Nano GPIO pins
-        --  have been dedicated to the Audio Mini
-        --  plug-in card.  The new signals
-        --  Audio_Mini_GPIO_0 & Audio_Mini_GPIO_1
-        --  contain the available GPIO.
         ----------------------------------------
-        -- GPIO_0 : inout std_logic_vector(35 downto 0);            --! The 40 pin header on the top of the board
-        -- GPIO_1 : inout std_logic_vector(35 downto 0);            --! The 40 pin header on the bottom of the board
-        Audio_Mini_GPIO_0 : inout std_logic_vector(33 downto 0); --! 34 available I/O pins on GPIO_0
-        Audio_Mini_GPIO_1 : inout std_logic_vector(12 downto 0); --! 13 available I/O pins on GPIO_1
-
-        ----------------------------------------
-        --  AD1939 Audio Codec
-        --  Physical Connection signals
-        ----------------------------------------
-        -- AD1939 clock and Reset
-        AD1939_MCLK         : in    std_logic; --! 12.288 MHz clock driving AD1939
-        AD1939_RST_CODEC_n  : out   std_logic;
-        -- AD1939 SPI
-        AD1939_spi_CIN      : out   std_logic; --! AD1939 SPI signal = mosi data to AD1939 registers
-        AD1939_spi_CLATCH_n : out   std_logic; --! AD1939 SPI signal = ss_n: slave select (active low)
-        AD1939_spi_CCLK     : out   std_logic; --! AD1939 SPI signal = sclk: serial clock
-        AD1939_spi_COUT     : in    std_logic; --! AD1939 SPI signal = miso data from AD1939 registers
-        -- AD1939 ADC Serial Data
-        AD1939_ADC_ABCLK    : in    std_logic; --! Serial data from AD1939 pin 28 ABCLK,   Bit Clock for ADCs (Master Mode)
-        AD1939_ADC_ALRCLK   : in    std_logic; --! Serial data from AD1939 pin 29 ALRCLK,  LR Clock for ADCs  (Master Mode)
-        AD1939_ADC_ASDATA2  : in    std_logic; --! Serial data from AD1939 pin 26 ASDATA2, ADC2 24-bit normal stereo serial mode
-        -- AD1939 DAC Serial Data
-        AD1939_DAC_DBCLK    : out   std_logic; --! Serial data to   AD1939 pin 21 DBCLK,   Bit Clock for DACs (Slave Mode)
-        AD1939_DAC_DLRCLK   : out   std_logic; --! Serial data to   AD1939 pin 22 DLRCLK,  LR Clock for DACs  (Slave Mode)
-        AD1939_DAC_DSDATA1  : out   std_logic; --! Serial data to   AD1939 pin 20 DSDATA1, DAC1 24-bit normal stereo serial mode
-
-        ----------------------------------------
-        --  Digital Microphone INMP621
-        --  Physical connection signals
-        ----------------------------------------
-        INMP621_mic_CLK  : out   std_logic;
-        INMP621_mic_DATA : in    std_logic;
-
-        ----------------------------------------
-        --  Audio Mini LEDs and Switches
-        ----------------------------------------
-        Audio_Mini_LEDs     : out   std_logic_vector(3 downto 0);
-        Audio_Mini_SWITCHES : in    std_logic_vector(3 downto 0);
+        GPIO_0 : inout std_logic_vector(35 downto 0);            --! The 40 pin header on the top of the board
+        GPIO_1 : inout std_logic_vector(35 downto 0);            --! The 40 pin header on the bottom of the board
 
         ----------------------------------------
         --  Arduino Uno R3 Expansion Header
@@ -164,10 +120,6 @@ entity DE10Nano_System is
         HPS_SD_CLK       : out   std_logic;
         HPS_SD_CMD       : inout std_logic;
         HPS_SD_DATA      : inout std_logic_vector(3 downto 0);
-        HPS_SPIM_CLK     : out   std_logic;
-        HPS_SPIM_MISO    : in    std_logic;
-        HPS_SPIM_MOSI    : out   std_logic;
-        HPS_SPIM_SS      : inout std_logic;
         HPS_UART_RX      : in    std_logic;
         HPS_UART_TX      : out   std_logic;
         HPS_USB_DATA     : inout std_logic_vector(7 downto 0);
@@ -224,10 +176,6 @@ architecture DE10Nano_arch of DE10Nano_System is
             hps_hps_io_hps_io_usb1_inst_STP     : out   std_logic;
             hps_hps_io_hps_io_usb1_inst_DIR     : in    std_logic;
             hps_hps_io_hps_io_usb1_inst_NXT     : in    std_logic;
-            hps_hps_io_hps_io_spim1_inst_CLK    : out   std_logic;
-            hps_hps_io_hps_io_spim1_inst_MOSI   : out   std_logic;
-            hps_hps_io_hps_io_spim1_inst_MISO   : in    std_logic;
-            hps_hps_io_hps_io_spim1_inst_SS0    : out   std_logic;
             hps_hps_io_hps_io_uart0_inst_RX     : in    std_logic;
             hps_hps_io_hps_io_uart0_inst_TX     : out   std_logic;
             hps_hps_io_hps_io_i2c0_inst_SDA     : inout std_logic;
@@ -238,15 +186,6 @@ architecture DE10Nano_arch of DE10Nano_System is
             hps_hps_io_hps_io_gpio_inst_GPIO53  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO54  : inout std_logic;
             hps_hps_io_hps_io_gpio_inst_GPIO61  : inout std_logic;
-            hps_spim0_txd                       : out   std_logic;
-            hps_spim0_rxd                       : in    std_logic;
-            hps_spim0_ss_in_n                   : in    std_logic;
-            hps_spim0_ssi_oe_n                  : out   std_logic;
-            hps_spim0_ss_0_n                    : out   std_logic;
-            hps_spim0_ss_1_n                    : out   std_logic;
-            hps_spim0_ss_2_n                    : out   std_logic;
-            hps_spim0_ss_3_n                    : out   std_logic;
-            hps_spim0_sclk_out_clk              : out   std_logic;
             memory_mem_a                        : out   std_logic_vector(14 downto 0);
             memory_mem_ba                       : out   std_logic_vector(2 downto 0);
             memory_mem_ck                       : out   std_logic;
@@ -294,17 +233,6 @@ begin
     -- Signal renaming to make code more readable
     ---------------------------------------------------------------------------------------------
     Push_Button <= not KEY; -- Rename signal to push button, which is a better description of KEY input (which really should be labelled as KEY_n since it is active low).
-    Audio_Mini_GPIO_1(2 downto 0) <= LED_GPIOs(2) & LED_GPIOs(1) & LED_GPIOs(0);
-
-    -------------------------------------------------------
-    -- Control Audio Mini LEDs using switches
-    -------------------------------------------------------
-    Audio_Mini_LEDs <= Audio_Mini_switches;
-
-    -------------------------------------------------------
-    -- AD1939
-    -------------------------------------------------------
-    AD1939_RST_CODEC_n <= '1'; -- hold AD1939 out of reset
 
     -------------------------------------------------------
     -- HPS
@@ -318,17 +246,6 @@ begin
     ---------------------------------------------------------------------------------------------
     u0 : component soc_system
         port map (
-            -- HPS SPI connection to AD1939
-            hps_spim0_txd          => AD1939_spi_CIN,
-            hps_spim0_rxd          => AD1939_spi_COUT,
-            hps_spim0_ss_in_n      => '1',
-            hps_spim0_ssi_oe_n     => open,
-            hps_spim0_ss_0_n       => AD1939_spi_CLATCH_n,
-            hps_spim0_ss_1_n       => open,
-            hps_spim0_ss_2_n       => open,
-            hps_spim0_ss_3_n       => open,
-            hps_spim0_sclk_out_clk => AD1939_spi_CCLK,
-
             -- HPS Clock and Reset
             clk_clk                         => FPGA_CLK1_50,
             reset_reset_n                   => not hps_cold_reset,
@@ -375,12 +292,6 @@ begin
             hps_hps_io_hps_io_sdio_inst_D2  => HPS_SD_DATA(2),
             hps_hps_io_hps_io_sdio_inst_D3  => HPS_SD_DATA(3),
 
-            -- HPS SPI
-            hps_hps_io_hps_io_spim1_inst_CLK  => HPS_SPIM_CLK,
-            hps_hps_io_hps_io_spim1_inst_MOSI => HPS_SPIM_MOSI,
-            hps_hps_io_hps_io_spim1_inst_MISO => HPS_SPIM_MISO,
-            hps_hps_io_hps_io_spim1_inst_SS0  => HPS_SPIM_SS,
-
             -- HPS UART
             hps_hps_io_hps_io_uart0_inst_RX => HPS_UART_RX,
             hps_hps_io_hps_io_uart0_inst_TX => HPS_UART_TX,
@@ -425,14 +336,18 @@ begin
             pwms_out_channels => LED_GPIOs
         );
 
+    -- Connect PWM outputs to GPIOs
+    GPIO_1(11) <= LED_GPIOs(0);
+    GPIO_1(14) <= LED_GPIOs(1);
+    GPIO_1(16) <= LED_GPIOs(2);
 
     -------------------------------------------------------
     -- DE10-Nano Board (unused output signals)
     -------------------------------------------------------
-    Audio_Mini_GPIO_0 <= (others => 'Z');
-    Audio_Mini_GPIO_1 <= (others => 'Z');
-    ARDUINO_IO        <= (others => 'Z');
-    ARDUINO_RESET_N   <= 'Z';
-    LED               <= (others => '0');
+    GPIO_0          <= (others => 'Z');
+    GPIO_1          <= (others => 'Z');
+    ARDUINO_IO      <= (others => 'Z');
+    ARDUINO_RESET_N <= 'Z';
+    LED             <= (others => '0');
 
 end architecture;
