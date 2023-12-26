@@ -91,6 +91,7 @@ Copy the following files into the `sdcard` directory:
 - RocketBoards' `make_sdimage_p3.py` script (included in this directory, or available [here](https://releases.rocketboards.org/2021.04/gsrd/tools/make_sdimage_p3.py))
 - The `u-boot-with-spl.sfp` image (located at the top level of the U-Boot repo, after compilation)
 - The boot script `boot-mmc.script` from this directory
+
 Also, create a directory named `sdfs` within `sdcard`, and copy the following files into it:
 - The compiled device tree blob (`.dtb` file) for your system, as mentioned in the [Preparation section](#preparation)
 - The kernel image you wish to use (probably named `zImage`)
